@@ -1,0 +1,10 @@
+# Suppression file
+# Each line is a regular expression. Matching messages will be suppressed
+#
+# Suppress "*** *** ***" decorations and extra text logged by autosave
+#
+\*\*\* \*\*\*.*
+(save_restore)*.*(Can't write new backup file).*
+(save_file: Backup file)*.*(is bad).*
+errlog = [0-9]+ messages were discarded
+.*tPortmapd.*panic.*
