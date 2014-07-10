@@ -5,7 +5,7 @@ cd %MYDIRBLOCK%base\IOCLogServer\
 
 IF NOT EXIST ioc-log-server.jar (
     echo Building IOC Log Server
-	call ant -q build-jar
+	call ant -q clean build-jar
 )
 
 cd %MYDIRBLOCK%base\IOCLogServer\

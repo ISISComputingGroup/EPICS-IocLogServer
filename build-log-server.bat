@@ -3,4 +3,4 @@ set MYDIRBLOCK=%~dp0
 
 cd %MYDIRBLOCK%base\IOCLogServer\
 
-ant build-jar
+ant clean build-jar
