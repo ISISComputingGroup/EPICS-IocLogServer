@@ -67,7 +67,7 @@ public class ClientHandler implements Runnable
         messageParser = new IocMessageParser();
 
         this.application_id = STANDALONE_LOG_SERVER;
-        System.out.println("IOC Client " + client_host + " connected");
+        System.out.println("IOC Client " + client_host + ":" + client_socket.getPort() + " connected");
     }
 
     /** Thread runnable */
@@ -94,7 +94,7 @@ public class ClientHandler implements Runnable
                 
             	final boolean suppressible = matcher.check(msg);
             	
-            	System.out.println("Message received from "+ client_host + ":" + client_socket.getPort() + " - " +  msg);  // krw
+            	System.out.println("Message received from "+ client_host + ":" + client_socket.getPort() + " - " +  msg);
             	
             	if (suppressible==false) 
             	{
@@ -108,7 +108,7 @@ public class ClientHandler implements Runnable
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+        	System.out.println("Lost connection with client at "+ client_host + ":" + client_socket.getPort());
         }
     }
 
