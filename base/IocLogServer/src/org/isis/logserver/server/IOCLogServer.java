@@ -6,6 +6,19 @@ import org.isis.logserver.jms.JmsHandler;
 import org.isis.logserver.message.MessageMatcher;
 import org.isis.logserver.rdb.RdbHandler;
 
+
+/*	TODO List
+ * 
+ * - Add message suppression for the case of repeated messages.
+ * - Move configuration of ports, jms server address, sql server details
+ * 		to external configuration file.
+ * - Develop standardised message format for use by IOCs
+ * - Convert JMS output to XML in some standard format.
+ * 
+ * 
+ */
+
+
 /** IOCLogServer
  * 
  * A server that listens for messages (from IOCs) on a number of specified ports, processes 
