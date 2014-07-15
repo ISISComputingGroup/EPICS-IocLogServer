@@ -21,7 +21,7 @@ public class IocMessageParser extends ClientMessageParser
 		message.setContents(text);
 		message.setSeverity(SEVERITY);
 		message.setClientName("Fake IOC name");
-		message.setType("ioclog2");
+		message.setType("ioclog");
 		
 		// temp - setting event time from current time rather than parsing from message
     	final Calendar calendar = Calendar.getInstance();

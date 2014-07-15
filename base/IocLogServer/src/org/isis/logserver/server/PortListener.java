@@ -6,6 +6,9 @@ import java.net.Socket;
 
 import org.isis.logserver.jms.JmsHandler;
 import org.isis.logserver.message.MessageMatcher;
+import org.isis.logserver.parser.CaputMessageParser;
+import org.isis.logserver.parser.ClientMessageParser;
+import org.isis.logserver.parser.IocMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
 
 /**
@@ -60,13 +63,27 @@ public class PortListener extends Thread
 				} catch (InterruptedException e) { }
 			}
 		}
+		
+		// TODO: this shouldn't be hard-coded, move this selection elsewhere
+		ClientMessageParser parser = null;
+		if(port == 7011)
+		{
+			parser = new CaputMessageParser();
+		}
+		else
+		{
+			parser = new IocMessageParser();
+		}
+		
 			
         try
         {
             while(active)
             {
                 final Socket client_socket = listener.accept();
-                final ClientHandler client_handler = new ClientHandler(client_socket, suppressions, jmsHandler, rdbHandler);
+                final ClientHandler client_handler 
+                	= new ClientHandler(client_socket, suppressions, jmsHandler, rdbHandler, parser);
+                
                 final Thread t = new Thread(client_handler);
                 t.start();
             }

@@ -13,7 +13,6 @@ import org.isis.logserver.message.MessageFilter;
 import org.isis.logserver.message.MessageMatcher;
 import org.isis.logserver.message.MessageState;
 import org.isis.logserver.parser.ClientMessageParser;
-import org.isis.logserver.parser.IocMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
 
 /**
@@ -56,7 +55,7 @@ public class ClientHandler implements Runnable
 	 * @param client_socket
 	 */
     public ClientHandler(final Socket client_socket, final MessageMatcher matcher, 
-    		final JmsHandler jmsHandler, final RdbHandler rdbHandler)
+    		final JmsHandler jmsHandler, final RdbHandler rdbHandler, ClientMessageParser messageParser)
     {
     	this.matcher=matcher;
         this.client_socket = client_socket;
@@ -64,7 +63,7 @@ public class ClientHandler implements Runnable
         this.jmsHandler = jmsHandler;
         this.rdbHandler = rdbHandler;
         
-        messageParser = new IocMessageParser();
+        this.messageParser = messageParser;
 
         this.application_id = STANDALONE_LOG_SERVER;
         System.out.println("IOC Client " + client_host + ":" + client_socket.getPort() + " connected");

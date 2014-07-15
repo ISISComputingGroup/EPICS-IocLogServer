@@ -31,7 +31,7 @@ import org.isis.logserver.rdb.RdbHandler;
 public class IOCLogServer
 {
     /** Default port number */
-    final private static int IN_PORTS[] = { 7004, 7011 }; // krw - 7004 is caput; 7011 is IOC log
+    final private static int IN_PORTS[] = { 7004, 7011 }; // krw - 7011 is caput; 7004 is IOC log
     final private static String JMS_URL = "tcp://localhost:61616";
 
     final private static String SUPPRESSIONS =  "suppression/suppression.txt";

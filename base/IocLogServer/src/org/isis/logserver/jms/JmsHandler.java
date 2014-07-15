@@ -22,6 +22,7 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 
 import org.isis.logserver.message.LogMessage;
+import org.isis.logserver.xml.XmlWriter;
 
 /**
  * Handles the connection to a Java Message Service (JMS) Server.
@@ -52,6 +53,7 @@ public class JmsHandler implements Runnable
 
 	private static String TOPIC = "iocLogs";
 	private MessageProducer client_producer;
+
 
 	private Queue<LogMessage> messageBuffer;
 	private int MAX_BUFFER_SIZE = 10000;
@@ -172,9 +174,11 @@ public class JmsHandler implements Runnable
 					try
 					{
 						LogMessage message = messageBuffer.peek();
+						
 						String messageContent = message.getContents();
-
-						client_producer.send(createTextMessage(messageContent));
+						String xmlMessage = XmlWriter.MessageToXmlString(message);
+						
+						client_producer.send(createTextMessage(xmlMessage));
 
 						// remove the message from the queue if successfully sent
 						messageBuffer.remove();
