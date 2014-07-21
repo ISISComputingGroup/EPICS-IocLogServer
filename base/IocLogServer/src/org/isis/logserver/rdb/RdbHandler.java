@@ -147,7 +147,10 @@ public class RdbHandler implements Runnable
         	rdbwriter = new RDBWriter("msg_log", rdb.getConnection());
         	long msg_id = rdbwriter.write(severity, type, clientName, messagePropertyMap);
         	
-        	info.setMessageID(msg_id);	
+        	if(info.getMessageID() == -1)
+        	{
+        		info.setMessageID(msg_id);
+        	}
         }
         catch(Exception ex)
         {
