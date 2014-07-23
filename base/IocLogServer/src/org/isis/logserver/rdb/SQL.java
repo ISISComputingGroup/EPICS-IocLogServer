@@ -1,61 +1,56 @@
 package org.isis.logserver.rdb;
 
-
-/*******************************************************************************
- * Copyright (c) 2010 Oak Ridge National Laboratory.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- ******************************************************************************/
-
-@SuppressWarnings("nls")
-public class SQL
+/**
+ * Prepares the SQL 'insert into' statement for adding a message to the database.
+ *
+ */
+public class Sql
 {
-    final public String select_property_id_by_name;
-
-    final public String select_next_property_id;
-
-    final public String insert_property_id;
-
-    final public String select_next_message_id;
-
-    final public String insert_message_id_datum_type_name_severity;
-
-    final public String insert_message_property_value;
-
-    /** Construct SQL Statements for RDB
-     *  @param rdb_util RDB/dialect to use
-     *  @param schema Schema name or ""
-     */
-    public SQL(final boolean isOracle, final String schema)
+    private static final String schemaName = "msg_log";
+    private static final String tableName = "message";
+    
+    private static final String[] dbColumnNames =
     {
-        final String prefix = (schema != null  &&  schema.length() > 0) ? schema + "."  :  "";
+    	"createTime",
+    	"eventTime",
+    	"type",
+    	"contents",
+    	"clientName",
+    	"severity",
+    	"clientHost",
+    	"applicationId",
+    	"repeatCount"
+    };
+    
+    private static final String dbColumnList;
+    private static final String dbParameterList;
+    
+    public static final String INSERT_STATEMENT;
+    
+    
+    static
+    {
+    	StringBuilder cols = new StringBuilder();
+    	StringBuilder params = new StringBuilder();
+    	
+    	cols.append(dbColumnNames[0]);
+    	params.append("?");
 
-		select_property_id_by_name =
-            "SELECT id FROM " + prefix + "msg_property_type WHERE name=?";
-
-        select_next_property_id =
-            "SELECT MAX(id)+1 FROM " + prefix + "msg_property_type";
-
-        insert_property_id = "INSERT INTO " + prefix + "msg_property_type " +
-        		"(id, name) VALUES (?,?)";
-
-        if (isOracle)
-        {   // Oracle uses sequence to get message.id.
-            select_next_message_id = "SELECT " + prefix + "message_id_seq.NEXTVAL FROM DUAL";           
-            insert_message_id_datum_type_name_severity =
-                "INSERT INTO " + prefix + "message (datum, type, name, severity, id) VALUES (?,?,?,?,?)";
-        }
-        else
-        {   // Other dialects use auto-increment ID column.
-            select_next_message_id = null;
-            insert_message_id_datum_type_name_severity =
-                "INSERT INTO " + prefix + "message (datum, type, name, severity) VALUES (?,?,?,?)";
-        }
-
-        insert_message_property_value =
-            "INSERT INTO " + prefix + "message_content" +
-            " (message_id, msg_property_type_id, value) VALUES(?,?,?)";
+    	for(int i=1; i<dbColumnNames.length; ++i)
+    	{
+    		cols.append(", " + dbColumnNames[i]);
+    		params.append(", ?");
+    	}
+    	
+    	dbColumnList = cols.toString();
+    	dbParameterList = params.toString();
+    }
+    
+    static
+    {
+		INSERT_STATEMENT =
+	            "INSERT INTO " + schemaName + "." + tableName 
+	            + " (" + dbColumnList + ")"
+	            + " VALUES (" + dbParameterList + ")";
     }
 }

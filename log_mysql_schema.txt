@@ -11,32 +11,14 @@ DROP TABLE IF EXISTS message;
 CREATE TABLE message 
 (
   id INT NOT NULL AUTO_INCREMENT,
-  datum TIMESTAMP NULL,
+  createTime TIMESTAMP NULL,
+  eventTime TIMESTAMP NULL,
   type VARCHAR(45) NULL,
-  name TEXT NULL,
+  contents TEXT NULL,
+  clientName TEXT NULL,
   severity VARCHAR(45) NULL,
+  clientHost TEXT NULL,
+  applicationId TEXT NULL,
+  repeatCount INT NULL DEFAULT 1,
   PRIMARY KEY (id)
 );
-
-DROP TABLE IF EXISTS message_content;
-CREATE TABLE message_content 
-(
-  message_id INT NOT NULL,
-  msg_property_type_id INT NOT NULL,
-  value TEXT NULL,
-  PRIMARY KEY (message_id, msg_property_type_id)
-);
-
-DROP TABLE IF EXISTS msg_property_type;
-CREATE TABLE msg_property_type 
-(
-  id INT NOT NULL AUTO_INCREMENT,
-  name VARCHAR(45) NULL,
-  PRIMARY KEY (id)
-);
-
-INSERT INTO msg_property_type VALUES (1, 'HOST');
-INSERT INTO msg_property_type VALUES (2, 'APPLICATION-ID');
-INSERT INTO msg_property_type VALUES (3, 'TEXT');
-INSERT INTO msg_property_type VALUES (4, 'CREATETIME');
-INSERT INTO msg_property_type VALUES (5, 'REPEATED');

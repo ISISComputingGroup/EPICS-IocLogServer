@@ -1,8 +1,6 @@
 package org.isis.logserver.rdb;
 
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Queue;
 
 import org.isis.logserver.message.LogMessage;
@@ -18,7 +16,7 @@ import org.isis.logserver.message.MessageState;
  */
 public class RdbHandler implements Runnable
 {
-	private RDB rdb;
+	private Rdb rdb;
 	
 	private Queue<LogMessage> messageBuffer;
 	private int MAX_BUFFER_SIZE = 10000;
@@ -54,7 +52,7 @@ public class RdbHandler implements Runnable
 				// Connect to Database if not currently connected
 				try 
 				{
-					rdb = RDB.connectToCluster("ics_msg_log_app", "fake_password", "MSG_LOG.");
+					rdb = Rdb.connectToDatabase();
 					System.out.println("Connected to MySQL database");
 				} 
 				catch (Exception e) 
@@ -120,48 +118,24 @@ public class RdbHandler implements Runnable
 	
 	protected void saveLogMessageToDb(LogMessage message) throws Exception
     {
-		String contents = message.getContents();
-		String severity = message.getSeverity();
-		String type = message.getType();
-		String eventTime = message.getEventTime();
-		String clientName = message.getClientName();
-		String clientHost = message.getClientHost();
-		String receivedTime = message.getTimeReceived();
-		String applicationId = message.getApplicationId();
-		
-		final Map<String, String> messagePropertyMap = new HashMap<String, String>();
-		messagePropertyMap.put("TEXT", contents);
-		messagePropertyMap.put("HOST",  clientHost);
-		messagePropertyMap.put("APPLICATION-ID", applicationId);
-		messagePropertyMap.put("CREATETIME", receivedTime);
-		messagePropertyMap.put("EVENTTIME", eventTime);
-		
-		
-    	// Get DB Connection
-        RDBWriter rdbwriter = null;
         try
         {
         	MessageFilter filter = MessageFilter.getInstance();
-        	final MessageState info = filter.checkMessageState(clientHost, contents);
+        	final MessageState info = filter.checkMessageState(message.getClientHost(), message.getContents());
         	
-        	rdbwriter = new RDBWriter("msg_log", rdb.getConnection());
-        	long msg_id = rdbwriter.write(severity, type, clientName, messagePropertyMap);
+        	RdbWriter rdbWriter = new RdbWriter(rdb.getConnection());
+        	long msg_id = rdbWriter.saveLogMessageToDb(message);
         	
         	if(info.getMessageID() == -1)
         	{
         		info.setMessageID(msg_id);
         	}
+        	
         }
         catch(Exception ex)
         {
-        	System.out.println("Could not connect to Database. Message not saved: " + contents);
+        	System.out.println("Could not connect to Database. Message not saved: " + message.getContents());
+        	ex.printStackTrace();
         }
-    	finally
-    	{
-    		if(rdbwriter != null)
-    		{
-    			rdbwriter.close();
-    		}
-		}
     }
 }

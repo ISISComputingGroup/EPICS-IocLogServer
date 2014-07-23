@@ -13,9 +13,8 @@ public class LogMessage
 	
 	// meta info
 	private String clientHost;
-	private String timeReceived;
+	private String createTime;
 	private String applicationId;
-	
 	
 	public String getRawMessage() {
 		return rawMessage;
@@ -59,11 +58,11 @@ public class LogMessage
 	public void setClientHost(String clientHost) {
 		this.clientHost = clientHost;
 	}
-	public String getTimeReceived() {
-		return timeReceived;
+	public String getCreateTime() {
+		return createTime;
 	}
-	public void setTimeReceived(String timeReceived) {
-		this.timeReceived = timeReceived;
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
 	}
 	public String getApplicationId() {
 		return applicationId;
@@ -71,8 +70,4 @@ public class LogMessage
 	public void setApplicationId(String applicationId) {
 		this.applicationId = applicationId;
 	}
-	
-
-	
-
 }

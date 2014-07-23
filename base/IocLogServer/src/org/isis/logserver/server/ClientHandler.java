@@ -120,7 +120,7 @@ public class ClientHandler implements Runnable
     	LogMessage clientMessage = messageParser.parse(message);
     	clientMessage.setClientHost(client_host);
     	clientMessage.setApplicationId(application_id);
-    	clientMessage.setTimeReceived(timeReceived.toString());
+    	clientMessage.setCreateTime(timeReceived.toString());
     	
     	// TODO: filter out repeat messages
 
