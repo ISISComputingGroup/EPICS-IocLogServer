@@ -1,10 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2010 Oak Ridge National Laboratory.
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  which accompanies this distribution, and is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- ******************************************************************************/
+/*
+ * Copyright (C) 2013-2014 Research Councils UK (STFC)
+ *
+ * This file is part of the Instrument Control Project at ISIS.
+ *
+ * This code and information are provided "as is" without warranty of any 
+ * kind, either expressed or implied, including but not limited to the
+ * implied warranties of merchantability and/or fitness for a particular 
+ * purpose.
+ */
 package org.isis.logserver.jms;
 
 import java.util.ArrayDeque;
@@ -58,14 +61,6 @@ public class JmsHandler implements Runnable
 	private Queue<LogMessage> messageBuffer;
 	private int MAX_BUFFER_SIZE = 10000;
 
-	/**
-	 * Initialize
-	 * 
-	 * @param url
-	 *            JMS Server URL
-	 * @throws NullPointerException
-	 *             for <code>null</code> URL
-	 */
 	public JmsHandler(final String url) 
 	{
 		if (url == null) 
@@ -78,7 +73,6 @@ public class JmsHandler implements Runnable
 		messageBuffer = new ArrayDeque<LogMessage>();
 	}
 
-	/** @return <code>true</code> when connected */
 	public synchronized boolean isConnected() {
 		return jms_server != null && connectedToJms;
 	}
@@ -86,12 +80,6 @@ public class JmsHandler implements Runnable
 	/**
 	 * Create a producer. Derived class can use this to create one or more
 	 * producers, sending MapMessages to them in the communicator thread.
-	 * 
-	 * @param topic_name
-	 *            Name of topic for the new producer
-	 * @return MessageProducer
-	 * @throws JMSException
-	 *             on error
 	 */
 	protected MessageProducer createProducer(final String topic_name)
 			throws JMSException {
@@ -102,44 +90,22 @@ public class JmsHandler implements Runnable
 	}
 
 	/**
-	 * Create a consumer.
-	 * 
-	 * @param topic_name
-	 *            Name of topic for the new consumer
-	 * @return MessageProducer
-	 * @throws JMSException
-	 *             on error
-	 */
-	protected MessageConsumer createConsumer(final String topic_name)
-			throws JMSException {
-		final Topic topic = session.createTopic(topic_name);
-		final MessageConsumer consumer = session.createConsumer(topic);
-		return consumer;
-	}
-
-	/**
 	 * Create JMS producers and consumers. To be implemented by derived classes.
-	 * 
-	 * @throws Exception
-	 *             on error
 	 */
-	protected void createProducersAndConsumers() throws Exception {
+	protected void createProducer() throws Exception {
 		client_producer = createProducer(TOPIC);
 	}
 
 	/**
 	 * Close previously created JMS producers and consumers. To be implemented
 	 * by derived classes.
-	 * 
-	 * @see #createProducersAndConsumers()
-	 * @throws Exception
-	 *             on error
 	 */
-	protected void closeProducersAndConsumers() throws Exception {
+	protected void closeProducer() throws Exception {
 		client_producer.close();
 	}
 
-	public void addToDispatchQueue(LogMessage msg) {
+	public void addToDispatchQueue(LogMessage msg) 
+	{
 		if (msg != null) {
 			addMessageToBuffer(msg);
 		}
@@ -152,7 +118,8 @@ public class JmsHandler implements Runnable
 	 * allows for messages to be stored up if connection to the JMS server is
 	 * temporarily lost.
 	 */
-	protected void addMessageToBuffer(LogMessage msg) {
+	protected void addMessageToBuffer(LogMessage msg) 
+	{
 		synchronized (messageBuffer) {
 			// If the maximum size of the buffer has been exceeded, add
 			if (messageBuffer.size() > MAX_BUFFER_SIZE) {
@@ -190,17 +157,6 @@ public class JmsHandler implements Runnable
 				}
 			}
 		}
-	}
-
-	/**
-	 * Create empty map message on the communicator's session
-	 * 
-	 * @return MapMessage
-	 * @throws JMSException
-	 *             on error
-	 */
-	protected synchronized MapMessage createMapMessage() throws JMSException {
-		return session.createMapMessage();
 	}
 
 	protected synchronized TextMessage createTextMessage(String msg)
@@ -259,12 +215,11 @@ public class JmsHandler implements Runnable
 
 	/**
 	 * Connect to JMS
-	 * 
-	 * @throws Exception
-	 *             on error
 	 */
-	private void connect() throws Exception {
+	private void connect() throws Exception 
+	{
 		connection = JMSConnectionFactory.connect(url);
+		
 		// Try to update JMS server info via connection listener
 		JMSConnectionFactory.addListener(connection,
 				new JMSConnectionListener() 
@@ -282,7 +237,7 @@ public class JmsHandler implements Runnable
 							jms_server = null;
 						}
 					}
-				});
+		});
 
 		// Log exceptions
 		connection.setExceptionListener(new ExceptionListener() {
@@ -309,13 +264,13 @@ public class JmsHandler implements Runnable
 		
 		session = connection.createSession(/* transacted */false,
 				Session.AUTO_ACKNOWLEDGE);
-		createProducersAndConsumers();
+		createProducer();
 	}
 
 	/** Disconnect from JMS */
 	private void disconnect() {
 		try {
-			closeProducersAndConsumers();
+			closeProducer();
 		} catch (Exception ex) {
 			// Activator.getLogger().log(Level.WARNING, "JMS shutdown error",
 			// ex);

@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2013-2014 Research Councils UK (STFC)
+ *
+ * This file is part of the Instrument Control Project at ISIS.
+ *
+ * This code and information are provided "as is" without warranty of any 
+ * kind, either expressed or implied, including but not limited to the
+ * implied warranties of merchantability and/or fitness for a particular 
+ * purpose.
+ */
 package org.isis.logserver.jms;
 
 import java.io.IOException;
@@ -12,51 +22,17 @@ import org.apache.activemq.transport.TransportListener;
 /** Helper for connecting to a JMS server.
  *  Shields from the underling ActiveMQ API,
  *  only providing a <code>javax.jms.Connection</code>.
- *  <p>
- *  Attempts to support a link up/down listener that's notified
- *  about the actual JMS server (in case of 'failover' URLs, that can
- *  be any one from a list of possible servers).
- *  <p>
- *  <b>Logging:</b>
- *  ActiveMQ uses org.apache.commons.logging, defaulting to its Jdk14Logger.
- *  The rest of CSS uses Log4J, but since Log4J potentially gets configured
- *  to send log messages to JMS, we would create a circular dependency
- *  <pre>JMS -> logs to Log4J -> sends messages to JMS</pre>
- *  <p>
- *  The Jdk14Logger will by default print to messages like
- *  "Failovertransport connected" to the console.
- *  <p>
- *  One way to avoid them is to set these VM arguments,
- *  either on the command-line or in the *.product file:
- *  <pre>
- *  -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog
- *  -Dorg.apache.commons.logging.simplelog.defaultlog=fatal
- *  </pre>
- *  
- *  @author Kay Kasemir
  */
 public class JMSConnectionFactory
 {
-    /** Connect to JMS
-     *  @param url URL of server. Details can differ for ActiveMQ
-     *             or other implementations.
-     *  @return Connection
-     *  @throws JMSException on error
-     */
+    /** Connect to JMS */
     public static Connection connect(final String url) throws JMSException
     {
         return connect(url, ActiveMQConnection.DEFAULT_USER,
                 ActiveMQConnection.DEFAULT_PASSWORD);
     }
 
-    /** Connect to JMS
-     *  @param url URL of server. Details can differ for ActiveMQ
-     *             or other implementations.
-     *  @param user JMS user name
-     *  @param password JMS password
-     *  @return Connection
-     *  @throws JMSException on error
-     */
+    /** Connect to JMS */
     public static Connection connect(final String url,
             final String user, final String password) throws JMSException
     {

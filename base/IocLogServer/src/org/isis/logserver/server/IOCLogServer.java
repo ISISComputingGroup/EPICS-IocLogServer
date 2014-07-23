@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2013-2014 Research Councils UK (STFC)
+ *
+ * This file is part of the Instrument Control Project at ISIS.
+ *
+ * This code and information are provided "as is" without warranty of any 
+ * kind, either expressed or implied, including but not limited to the
+ * implied warranties of merchantability and/or fitness for a particular 
+ * purpose.
+ */
 package org.isis.logserver.server;
 
 import java.util.Date;
@@ -13,7 +23,6 @@ import org.isis.logserver.rdb.RdbHandler;
  * - Move configuration of ports, jms server address, sql server details
  * 		to external configuration file.
  * - Develop standardised message format for use by IOCs
- * - Convert JMS output to XML in some standard format.
  * 
  * 
  */
