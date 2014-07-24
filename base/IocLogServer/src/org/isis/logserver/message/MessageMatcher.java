@@ -34,11 +34,14 @@ public class MessageMatcher {
 	    	 //skip comments:
 	    	 if(strLine.startsWith("#"))
 	    	     continue;
-	       System.out.println ("Suppression pattern: " + strLine);
+	       //System.out.println ("Suppression pattern: " + strLine);
 	       addExpression(strLine);
 	     }
+	     
 	     //Close the input stream
 	     in.close();
+	     
+	     System.out.println ("Suppression patterns loaded from file: '" + filename + "'");
 	}
 
 

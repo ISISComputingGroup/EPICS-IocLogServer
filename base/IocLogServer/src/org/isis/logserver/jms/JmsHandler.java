@@ -17,14 +17,12 @@ import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-import javax.jms.MapMessage;
-import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.jms.Topic;
 
 import org.isis.logserver.message.LogMessage;
+import org.isis.logserver.server.Config;
 import org.isis.logserver.xml.XmlWriter;
 
 /**
@@ -38,7 +36,9 @@ import org.isis.logserver.xml.XmlWriter;
 public class JmsHandler implements Runnable
 {
 	/** JMS Server URL */
-	final private String url;
+	private final String url;
+	private final String topic;
+	
 
 	/** Server name, <code>null</code> if not connected */
 	private String jms_server = null;
@@ -54,21 +54,15 @@ public class JmsHandler implements Runnable
 
 	private boolean connectedToJms;
 
-	private static String TOPIC = "iocLogs";
 	private MessageProducer client_producer;
-
 
 	private Queue<LogMessage> messageBuffer;
 	private int MAX_BUFFER_SIZE = 10000;
 
-	public JmsHandler(final String url) 
-	{
-		if (url == null) 
-		{
-			throw new NullPointerException("JMS URL must not be null");
-		}
-
-		this.url = url;
+	public JmsHandler(Config config) 
+	{	
+		this.url = config.getJmsUrl();
+		this.topic = config.getJmsTopic();
 
 		messageBuffer = new ArrayDeque<LogMessage>();
 	}
@@ -82,7 +76,8 @@ public class JmsHandler implements Runnable
 	 * producers, sending MapMessages to them in the communicator thread.
 	 */
 	protected MessageProducer createProducer(final String topic_name)
-			throws JMSException {
+			throws JMSException 
+	{
 		final Topic topic = session.createTopic(topic_name);
 		final MessageProducer producer = session.createProducer(topic);
 		producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -93,7 +88,7 @@ public class JmsHandler implements Runnable
 	 * Create JMS producers and consumers. To be implemented by derived classes.
 	 */
 	protected void createProducer() throws Exception {
-		client_producer = createProducer(TOPIC);
+		client_producer = createProducer(topic);
 	}
 
 	/**
@@ -145,7 +140,7 @@ public class JmsHandler implements Runnable
 						String messageContent = message.getContents();
 						String xmlMessage = XmlWriter.MessageToXmlString(message);
 						
-						client_producer.send(createTextMessage(xmlMessage));
+						client_producer.send(session.createTextMessage(xmlMessage));
 
 						// remove the message from the queue if successfully sent
 						messageBuffer.remove();
@@ -157,12 +152,6 @@ public class JmsHandler implements Runnable
 				}
 			}
 		}
-	}
-
-	protected synchronized TextMessage createTextMessage(String msg)
-			throws JMSException 
-	{
-		return session.createTextMessage(msg);
 	}
 
 	/** 'Runnable' for the thread */
@@ -181,7 +170,7 @@ public class JmsHandler implements Runnable
 				try 
 				{
 					connect();
-					System.out.println("Connected to JMS server: " + url);
+					System.out.println("Connected to JMS server @ " + url);
 					connectedToJms = true;
 
 					synchronized (this) 
@@ -196,7 +185,11 @@ public class JmsHandler implements Runnable
 				} 
 				catch (Exception ex) 
 				{
-					System.out.println("Problem connecting to JMS server. Will retry in 1 second.");
+					System.out.println("Problem connecting to JMS server. Will retry in 10 seconds.");
+					
+					try {
+						Thread.sleep(9000);
+					} catch (InterruptedException e) { }
 				}
 			}
 

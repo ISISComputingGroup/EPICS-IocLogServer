@@ -10,12 +10,16 @@
  */
 package org.isis.logserver.rdb;
 
+import java.sql.SQLException;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
 import org.isis.logserver.message.LogMessage;
 import org.isis.logserver.message.MessageFilter;
 import org.isis.logserver.message.MessageState;
+import org.isis.logserver.server.Config;
+
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 /**
  * Handles the connection to a MySQL database. Automatically attempts 
@@ -26,19 +30,32 @@ import org.isis.logserver.message.MessageState;
  */
 public class RdbHandler implements Runnable
 {
+	private static final int MAX_BUFFER_SIZE = 10000;
+	
 	private Rdb rdb;
 	
-	private Queue<LogMessage> messageBuffer;
-	private int MAX_BUFFER_SIZE = 10000;
+	private Config config;
 	
-	public RdbHandler()
+	private Queue<LogMessage> messageBuffer;
+	
+
+	public RdbHandler(Config config)
 	{
-		messageBuffer = new ArrayDeque<LogMessage>();
+		this.config = config;
+		messageBuffer = new ArrayDeque<LogMessage>();		
 	}
 
 	@Override
 	public void run() 
 	{
+		String msgConnected = "Connected to MySQL database @ " + config.getSqlUrl();
+		String msgCouldNotConnect = "Could not connect to MySQL database @ " + config.getSqlUrl() + ".";
+		String msgRetry = "Will retry in 10 seconds.";
+		String msgLinkFailure = "Communications link failure - perhaps the database isn't "
+				+ "running or your config settings are incorrect; check config file.";
+		String msgSqlException = "SQL exception - perhaps you user name ('" + config.getSqlUser() + "'), "
+				+ "password ('****') or schema ('" + config.getSqlSchema() + "') are incorrect; check config file.";
+		
 		while(true)
 		{
 			
@@ -60,14 +77,38 @@ public class RdbHandler implements Runnable
 			else
 			{
 				// Connect to Database if not currently connected
+				boolean fail = false;
 				try 
 				{
-					rdb = Rdb.connectToDatabase();
-					System.out.println("Connected to MySQL database");
-				} 
+					rdb = Rdb.connectToDatabase(config);
+					System.out.println(msgConnected);
+				}
+				catch(CommunicationsException ex)
+				{
+					System.out.println(msgCouldNotConnect);
+					System.out.println("\t" + msgLinkFailure);
+					System.out.println("\t" + msgRetry);
+					fail = true;
+				}
+				catch(SQLException ex)
+				{
+					System.out.println(msgCouldNotConnect);
+					System.out.println("\t" + msgSqlException);
+					System.out.println("\t" + msgRetry);
+					fail = true;
+				}
 				catch (Exception e) 
 				{
-					System.out.println("Could not connect to MySQL database. Will retry in 2 seconds");
+					System.out.println(msgCouldNotConnect);
+					System.out.println("\t" + msgRetry);
+					fail = true;
+				}
+				
+				if(fail)
+				{
+					try {
+						Thread.sleep(9000);
+					} catch (Exception e) { ; }
 				}
 			}
 			

@@ -13,24 +13,29 @@ package org.isis.logserver.rdb;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.isis.logserver.server.Config;
+
 public class Rdb
 {
-	private static String URL = "jdbc:mysql://localhost:3306/msg_log";
-	private static String USER_NAME = "admin";
-	private static String PASSWORD = "admin";
+	private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
 	
 	/** RDB connection */
 	final private Connection connection;
 		
-	public static Rdb connectToDatabase() throws Exception
+	public static Rdb connectToDatabase(Config config) throws Exception
 	{
-        return new Rdb();
+        return new Rdb(config);
 	}
 	
-	public Rdb() throws Exception
+	public Rdb(Config config) throws Exception
 	{
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
-        connection = DriverManager.getConnection(URL, USER_NAME, PASSWORD);
+		Class.forName(MYSQL_DRIVER).newInstance();
+		
+		String url = config.getSqlUrl();
+		String userName = config.getSqlUser();
+		String password = config.getSqlPassword();
+		
+        connection = DriverManager.getConnection(url, userName, password);
 	}
 
     /** @return JDBC connection */

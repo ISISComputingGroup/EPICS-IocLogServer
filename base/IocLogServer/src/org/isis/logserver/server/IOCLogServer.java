@@ -39,11 +39,9 @@ import org.isis.logserver.rdb.RdbHandler;
  */
 public class IOCLogServer
 {
-    /** Default port number */
-    final private static int IN_PORTS[] = { 7004, 7011 }; // krw - 7011 is caput; 7004 is IOC log
-    final private static String JMS_URL = "tcp://localhost:61616";
-
-    final private static String SUPPRESSIONS =  "suppression/suppression.txt";
+    final private static String SUPPRESSIONS =  "config/suppression.txt";
+    
+    private static final String CONFIG_FILE =  "config/logserver_config.ini";
 
     /** Listen for incoming connections and handle them */
     public static void main(String[] args)
@@ -68,11 +66,15 @@ public class IOCLogServer
         // Welcome message
         System.out.println( "Starting IOC Log Server - " + new Date());
         
+        // Load configuration
+        Config config = new Config();
+        config.loadConfigFromFile(CONFIG_FILE);
+        
         // Manages connection to JMS including message dispatch - runs in separate thread
         JmsHandler jmsHandler = null;
 		try
 		{
-			jmsHandler = new JmsHandler(JMS_URL);
+			jmsHandler = new JmsHandler(config);
 			Thread jmsThread = new Thread(jmsHandler, "JMS Handler Thread");
 			jmsThread.start();
 		}
@@ -82,10 +84,10 @@ public class IOCLogServer
 		}
 		
 		// Manage connection top SQL database.
-		RdbHandler rdbHandler = new RdbHandler();
+		RdbHandler rdbHandler = null;
 		try
 		{
-			rdbHandler = new RdbHandler();
+			rdbHandler = new RdbHandler(config);
 			
             Thread rdbThread = new Thread(rdbHandler, "SQL Database Handler Thread");
             rdbThread.start();
@@ -108,9 +110,10 @@ public class IOCLogServer
 		}
 		
 		// Start a port listener in a new thread for each port
-		for(int i=0; i<IN_PORTS.length; ++i)
+		Integer[] ports = config.getListenPorts();
+		for(int i=0; i<ports.length; ++i)
 		{
-			PortListener portListener = new PortListener(IN_PORTS[i], matcher, jmsHandler, rdbHandler);
+			PortListener portListener = new PortListener(ports[i], matcher, jmsHandler, rdbHandler);
 			portListener.start();
 		}
 		
