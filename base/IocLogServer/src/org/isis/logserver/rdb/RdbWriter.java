@@ -42,7 +42,7 @@ public class RdbWriter
 		
         int property = 0;
 
-        Timestamp eventTime = new Timestamp((message.getEventTime().getTimeInMillis());
+        Timestamp eventTime = new Timestamp(message.getEventTime().getTimeInMillis());
         Timestamp createTime = new Timestamp(message.getCreateTime().getTimeInMillis());
 
         preparedInsertStatement.setTimestamp(++property, eventTime);
