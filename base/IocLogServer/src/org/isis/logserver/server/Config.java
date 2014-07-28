@@ -37,8 +37,8 @@ public class Config
 	private static final String DEFAULT_jmsTopic = "iocLogs";
 	private static final String DEFAULT_sqlServerAddress = "jdbc:mysql://localhost";
 	private static final String DEFAULT_sqlServerPort = "3306";
-	private static final String DEFAULT_sqlUser = "admin";
-	private static final String DEFAULT_sqlPassword = "admin";
+	private static final String DEFAULT_sqlUser = "msg_log";
+	private static final String DEFAULT_sqlPassword = "$msg_log";
 	private static final String DEFAULT_sqlSchema = "msg_log";
 	private static final Integer[] DEFAULT_listenPorts = { 7004, 7011 };
 	
