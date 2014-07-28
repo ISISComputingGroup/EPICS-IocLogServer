@@ -10,7 +10,6 @@
  */
 package org.isis.logserver.parser;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
 
 import org.isis.logserver.message.LogMessage;
@@ -44,9 +43,7 @@ public class CaputMessageParser extends ClientMessageParser
 		message.setType("CA put");
 		
 		// temp - setting event time from current time rather than parsing from message
-    	final Calendar calendar = Calendar.getInstance();
-		final Timestamp timeStamp = new Timestamp(calendar.getTime().getTime());
-		message.setEventTime(timeStamp.toString());
+		message.setEventTime(Calendar.getInstance());
 		
 		
 		return message;

@@ -10,6 +10,9 @@
  */
 package org.isis.logserver.xml;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 import org.isis.logserver.message.LogMessage;
 
 public class XmlWriter 
@@ -52,15 +55,23 @@ public class XmlWriter
 	
 	public static String makeElement(String tag, String data)
 	{
-		return makeOpenTag(tag) + data + makeCloseTag(tag);
+		return makeOpenTag(tag) + data.toString() + makeCloseTag(tag);
 	}
 	
-	public static String makeOpenTag(String tag)
+	public static String makeElement(String tag, Calendar time)
+	{
+		Timestamp timestamp = new Timestamp(time.getTimeInMillis());
+		String timePrint = timestamp.toString().substring(0,23); // only want milliseconds, not nanoseconds
+				
+		return makeOpenTag(tag) + timePrint + makeCloseTag(tag);
+	}
+	
+	public static String makeOpenTag(Object tag)
 	{
 		return "<" + tag + ">";
 	}
 	
-	public static String makeCloseTag(String tag)
+	public static String makeCloseTag(Object tag)
 	{
 		return "</" + tag + ">";
 	}

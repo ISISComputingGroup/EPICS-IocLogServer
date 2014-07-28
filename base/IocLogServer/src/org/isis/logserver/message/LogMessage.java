@@ -10,6 +10,8 @@
  */
 package org.isis.logserver.message;
 
+import java.util.Calendar;
+
 
 public class LogMessage 
 {
@@ -17,13 +19,13 @@ public class LogMessage
 	private String rawMessage;
 	private String contents;
 	private String severity;
-	private String eventTime;
+	private Calendar eventTime;
 	private String clientName;
 	private String type;
 	
 	// meta info
 	private String clientHost;
-	private String createTime;
+	private Calendar createTime;
 	private String applicationId;
 	
 	public String getRawMessage() {
@@ -44,10 +46,10 @@ public class LogMessage
 	public void setSeverity(String severity) {
 		this.severity = severity;
 	}
-	public String getEventTime() {
+	public Calendar getEventTime() {
 		return eventTime;
 	}
-	public void setEventTime(String eventTime) {
+	public void setEventTime(Calendar eventTime) {
 		this.eventTime = eventTime;
 	}
 	public String getClientName() {
@@ -68,10 +70,10 @@ public class LogMessage
 	public void setClientHost(String clientHost) {
 		this.clientHost = clientHost;
 	}
-	public String getCreateTime() {
+	public Calendar getCreateTime() {
 		return createTime;
 	}
-	public void setCreateTime(String createTime) {
+	public void setCreateTime(Calendar createTime) {
 		this.createTime = createTime;
 	}
 	public String getApplicationId() {

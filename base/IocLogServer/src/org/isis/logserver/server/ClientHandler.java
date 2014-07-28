@@ -13,7 +13,6 @@ package org.isis.logserver.server;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -91,7 +90,6 @@ public class ClientHandler implements Runnable
             while ((msg = rdr.readLine())!= null)
             {
             	final Calendar calendar = Calendar.getInstance();
-        		final Timestamp timeStamp = new Timestamp(calendar.getTime().getTime());
         		
         		msg = msg.trim();	  
                 
@@ -107,7 +105,7 @@ public class ClientHandler implements Runnable
             	
             	if (suppressible==false) 
             	{
-            		logMessage(msg, timeStamp);
+            		logMessage(msg, calendar);
             	}
             	else
             	{
@@ -124,13 +122,13 @@ public class ClientHandler implements Runnable
     /** Log current text, severity, ... to RDB
      *  @throws Exception on error
      */
-    private void logMessage(String message, Timestamp timeReceived) throws Exception
+    private void logMessage(String message, Calendar timeReceived) throws Exception
     {
     	// Create the message
     	LogMessage clientMessage = messageParser.parse(message);
     	clientMessage.setClientHost(client_host);
     	clientMessage.setApplicationId(application_id);
-    	clientMessage.setCreateTime(timeReceived.toString());
+    	clientMessage.setCreateTime(timeReceived);
     	
     	// TODO: filter out repeat messages
 

@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import org.isis.logserver.message.LogMessage;
 
@@ -39,13 +41,16 @@ public class RdbWriter
         		rdbConnection.prepareStatement(Sql.INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS);
 		
         int property = 0;
-		
-        //preparedInsertStatement.setTimestamp(++property, message.getCreateTime());
-        //preparedInsertStatement.setTimestamp(++property, message.getEventTime());
+
+        Timestamp eventTime = new Timestamp((message.getEventTime().getTimeInMillis());
+        Timestamp createTime = new Timestamp(message.getCreateTime().getTimeInMillis());
+
+        preparedInsertStatement.setTimestamp(++property, eventTime);
+        preparedInsertStatement.setTimestamp(++property, createTime);
         
-        preparedInsertStatement.setString(++property, message.getCreateTime());
-        preparedInsertStatement.setString(++property, message.getEventTime());
-        
+        preparedInsertStatement.setString(++property, eventTime.toString().substring(0,23));
+        preparedInsertStatement.setString(++property, createTime.toString().substring(0,23));
+        	
         preparedInsertStatement.setString(++property, message.getType());
         preparedInsertStatement.setString(++property, message.getContents());
         preparedInsertStatement.setString(++property, message.getClientName());
