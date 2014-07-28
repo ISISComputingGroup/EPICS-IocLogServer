@@ -47,9 +47,6 @@ public class RdbWriter
 
         preparedInsertStatement.setTimestamp(++property, eventTime);
         preparedInsertStatement.setTimestamp(++property, createTime);
-        
-        preparedInsertStatement.setString(++property, eventTime.toString().substring(0,23));
-        preparedInsertStatement.setString(++property, createTime.toString().substring(0,23));
         	
         preparedInsertStatement.setString(++property, message.getType());
         preparedInsertStatement.setString(++property, message.getContents());
