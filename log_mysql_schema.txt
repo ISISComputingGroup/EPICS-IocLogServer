@@ -4,8 +4,18 @@ CREATE DATABASE msg_log;
 
 USE msg_log;
 
-
 SET storage_engine=INNODB;
+
+-- Create 'msg_log' user who can remotely access the 'archive' tables,
+-- but only change the table layout locally
+GRANT ALL ON msg_log.* TO msg_log@localhost IDENTIFIED BY '$msg_log';
+GRANT INSERT, SELECT, UPDATE, DELETE ON msg_log.* TO msg_log@'%' IDENTIFIED BY '$msg_log';
+FLUSH PRIVILEGES;
+
+-- Create 'msg_report' user who can read data
+GRANT SELECT ON msg_log.* TO msg_report@localhost IDENTIFIED BY '$msg_report';
+GRANT SELECT ON msg_log.* TO msg_report@'%' IDENTIFIED BY '$msg_report';
+FLUSH PRIVILEGES;
 
 DROP TABLE IF EXISTS message;
 CREATE TABLE message 
