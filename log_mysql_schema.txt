@@ -21,8 +21,8 @@ DROP TABLE IF EXISTS message;
 CREATE TABLE message 
 (
   id INT NOT NULL AUTO_INCREMENT,
-  createTime TIMESTAMP NULL,
-  eventTime TIMESTAMP NULL,
+  createTime TIMESTAMP(3) NULL,
+  eventTime TIMESTAMP(3) NULL,
   type VARCHAR(45) NULL,
   contents TEXT NULL,
   clientName TEXT NULL,
