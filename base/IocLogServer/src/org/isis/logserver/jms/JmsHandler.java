@@ -185,10 +185,10 @@ public class JmsHandler implements Runnable
 				} 
 				catch (Exception ex) 
 				{
-					System.out.println("Problem connecting to JMS server. Will retry in 10 seconds.");
+					System.out.println("Problem connecting to JMS server. Will retry in 5 seconds.");
 					
 					try {
-						Thread.sleep(9000);
+						Thread.sleep(4000);
 					} catch (InterruptedException e) { }
 				}
 			}
