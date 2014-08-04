@@ -61,7 +61,8 @@ public class XmlWriter
 	public static String makeElement(String tag, Calendar time)
 	{
 		Timestamp timestamp = new Timestamp(time.getTimeInMillis());
-		String timePrint = timestamp.toString().substring(0,23); // only want milliseconds, not nanoseconds
+		int num_chars = Math.min(23, timestamp.toString().length()); // only want milliseconds, not nanoseconds
+		String timePrint = timestamp.toString().substring(0,num_chars); 
 				
 		return makeOpenTag(tag) + timePrint + makeCloseTag(tag);
 	}
