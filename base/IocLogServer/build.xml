@@ -4,11 +4,12 @@
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="IocLogServer">
+<project basedir="." default="build-exe" name="IocLogServer">
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
+	<property name="launch4j.home" location="util/launch4j" />
     <path id="IocLogServer.classpath">
         <pathelement location="bin"/>
         <pathelement location="lib/mysql-connector-java-5.1.31-bin.jar"/>
@@ -59,4 +60,15 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/activemq-all-5.4.2.jar"/>
         </jar>
     </target>
+	
+	<target name="build-exe" depends="build-jar">
+		<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.home}/launch4j.jar
+		    :${launch4j.home}/lib/xstream.jar" />
+		<launch4j>
+			<config headerType="console" jar="ioc-log-server.jar" outfile="ioc-log-server.exe" errTitle="IocLogServer" chdir="." icon="isis_logo.ico">
+				<singleInstance mutexName="IocLogServer" />
+				<jre minVersion="1.6.0" />
+			</config>
+		</launch4j>
+	</target>
 </project>
