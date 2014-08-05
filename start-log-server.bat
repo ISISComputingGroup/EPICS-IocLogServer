@@ -1,5 +1,6 @@
 @echo off
 set LOGDIRBLOCK=%~dp0
+set CURRWORKINGDIR=%cd%
 
 cd %LOGDIRBLOCK%base\IOCLogServer\
 
@@ -11,3 +12,7 @@ IF NOT EXIST ioc-log-server.jar (
 cd %LOGDIRBLOCK%base\IOCLogServer\
 
 java -jar ioc-log-server.jar
+
+
+REM return to previous working directory
+cd %CURRWORKINGDIR%
