@@ -1,6 +1,10 @@
 @echo off
 set MYDIRBLOCK=%~dp0
 
-start "ActiveMQ" "%MYDIRBLOCK%ActiveMQ\bin\activemq.bat" start
+call %MYDIRBLOCK%..\..\config_env_base.bat
+
+%MYDIRBLOCK%..\..\support\HideWindow\bin\%EPICS_HOST_ARCH%\HideWindow.exe H
+
+call "%MYDIRBLOCK%ActiveMQ\bin\activemq.bat" start
 
 exit

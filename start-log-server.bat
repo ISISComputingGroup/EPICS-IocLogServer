@@ -2,6 +2,10 @@
 set LOGDIRBLOCK=%~dp0
 set CURRWORKINGDIR=%cd%
 
+call %MYDIRBLOCK%..\..\config_env_base.bat
+
+%MYDIRBLOCK%..\..\support\HideWindow\bin\%EPICS_HOST_ARCH%\HideWindow.exe H
+
 cd %LOGDIRBLOCK%base\IOCLogServer\
 
 IF NOT EXIST ioc-log-server.jar (
