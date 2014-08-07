@@ -4,7 +4,7 @@ set CURRWORKINGDIR=%cd%
 
 call %MYDIRBLOCK%..\..\config_env_base.bat
 
-%MYDIRBLOCK%..\..\support\HideWindow\bin\%EPICS_HOST_ARCH%\HideWindow.exe H
+%HIDEWINDOW% h
 
 cd %LOGDIRBLOCK%base\IOCLogServer\
 
