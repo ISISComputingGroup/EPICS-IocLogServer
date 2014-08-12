@@ -77,9 +77,9 @@ if "%ACTIVEMQ_DATA%" == "" set ACTIVEMQ_DATA=%ACTIVEMQ_HOME%\data
 
 if "%ACTIVEMQ_TMP%" == "" set ACTIVEMQ_TMP=%ACTIVEMQ_DATA%\tmp
 
-if "%ACTIVEMQ_OPTS%" == "" set ACTIVEMQ_OPTS=-Xms1G -Xmx1G -Djava.util.logging.config.file=logging.properties -Djava.security.auth.login.config=%ACTIVEMQ_CONF%\login.config
+if "%ACTIVEMQ_OPTS%" == "" set ACTIVEMQ_OPTS=-Xms64m -Xmx64m -Djava.util.logging.config.file=logging.properties -Djava.security.auth.login.config=%ACTIVEMQ_CONF%\login.config -Dorg.apache.activemq.UseDedicatedTaskRunner=false
 
-if "%SUNJMX%" == "" set SUNJMX=-Dcom.sun.management.jmxremote
+REM if "%SUNJMX%" == "" set SUNJMX=-Dcom.sun.management.jmxremote
 REM set SUNJMX=-Dcom.sun.management.jmxremote.port=1099 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
 
 REM Uncomment to enable YourKit profiling

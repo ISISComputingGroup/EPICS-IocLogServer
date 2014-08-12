@@ -29,15 +29,15 @@
     </bean>
 
    <!-- Allows accessing the server log -->
-    <bean id="logQuery" class="org.fusesource.insight.log.log4j.Log4jLogQuery"
+    <!--<bean id="logQuery" class="org.fusesource.insight.log.log4j.Log4jLogQuery"
           lazy-init="false" scope="singleton"
           init-method="start" destroy-method="stop">
-    </bean>
+    </bean>-->
 
     <!--
         The <broker> element is used to configure the ActiveMQ broker.
     -->
-    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.data}">
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" useJmx="false" dataDirectory="${activemq.data}">
 
         <destinationPolicy>
             <policyMap>
@@ -67,9 +67,9 @@
 
             http://activemq.apache.org/jmx.html
         -->
-        <managementContext>
+        <!--<managementContext>
             <managementContext createConnector="false"/>
-        </managementContext>
+        </managementContext>-->
 
         <!--
             Configure message persistence for the broker. The default persistence
@@ -78,9 +78,9 @@
 
             http://activemq.apache.org/persistence.html
         -->
-        <persistenceAdapter>
+        <!--<persistenceAdapter>
             <kahaDB directory="${activemq.data}/kahadb"/>
-        </persistenceAdapter>
+        </persistenceAdapter>-->
 
 
           <!--
@@ -111,10 +111,10 @@
         <transportConnectors>
             <!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB -->
             <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
-            <transportConnector name="amqp" uri="amqp://0.0.0.0:5672?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <!--<transportConnector name="amqp" uri="amqp://0.0.0.0:5672?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>-->
             <transportConnector name="stomp" uri="stomp://0.0.0.0:61613?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
-            <transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
-            <transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <!--<transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>-->
+            <!--<transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>-->
         </transportConnectors>
 
         <!-- destroy the spring context on shutdown to stop jetty -->
