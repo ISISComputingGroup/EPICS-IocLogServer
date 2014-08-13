@@ -3,19 +3,21 @@
 set CYGWIN=nodosfilewarning
 set MYDIRIOCLOG=%~dp0
 
+call %MYDIRIOCLOG%..\..\config_env_base.bat
+
 REM Set Logging directory
 IF "%ICPVARDIR%"=="" (
 	set ICPVARDIR=C:/Instrument/Var
 )
 set IOCLOGROOT=%ICPVARDIR%/logs/ioc
-
+for /F "usebackq" %%I in (`cygpath %IOCLOGROOT%`) do SET IOCCYGLOGROOT=%%I
 
 REM *****************************************
 REM *        JMS SERVER
 REM *****************************************
-set STARTCMD=%MYDIRIOCLOG%start-jms-server.bat
+set STARTCMD=%ComSpec% /c %MYDIRIOCLOG%start-jms-server.bat
 set CONSOLEPORT=9001
-set LOG_FILE=%IOCLOGROOT%/JMS-%%Y%%m%%d.log
+set LOG_FILE=%IOCCYGLOGROOT%/JMS-%%Y%%m%%d.log
 
 @echo Starting JMS Log Server on 127.0.0.1 (console port %CONSOLEPORT%)
 @echo * log file - %LOG_FILE%
@@ -25,9 +27,9 @@ set LOG_FILE=%IOCLOGROOT%/JMS-%%Y%%m%%d.log
 REM *****************************************
 REM *        LOG SERVER
 REM *****************************************
-set STARTCMD=%MYDIRIOCLOG%start-log-server.bat
+set STARTCMD=%ComSpec% /c %MYDIRIOCLOG%start-log-server.bat
 set CONSOLEPORT=9002
-set LOG_FILE=%IOCLOGROOT%/IOCLOG-%%Y%%m%%d.log
+set LOG_FILE=%IOCCYGLOGROOT%/IOCLOG-%%Y%%m%%d.log
 
 @echo Starting IOC Log Server on 127.0.0.1 (console port %CONSOLEPORT%)
 @echo * log file - %LOG_FILE%
