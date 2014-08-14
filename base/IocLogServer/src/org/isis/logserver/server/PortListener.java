@@ -85,10 +85,9 @@ public class PortListener extends Thread
 			parser = new IocMessageParser();
 		}
 		
-			
-        try
+        while(active)
         {
-            while(active)
+            try
             {
                 final Socket client_socket = listener.accept();
                 final ClientHandler client_handler 
@@ -97,10 +96,12 @@ public class PortListener extends Thread
                 final Thread t = new Thread(client_handler);
                 t.start();
             }
+            catch (IOException ex)
+            {
+            	System.out.println("Error listening on port " + port);
+            	ex.printStackTrace();
+            }
         }
-        catch (Exception ex)
-        {
-        	ex.printStackTrace();
-        }
+
 	}
 }

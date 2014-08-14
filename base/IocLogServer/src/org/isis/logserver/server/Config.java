@@ -235,7 +235,9 @@ public class Config
 		}
 		finally
 		{
-			out.close();
+			if(out != null) {
+				out.close();
+			}
 		}
 
 	}

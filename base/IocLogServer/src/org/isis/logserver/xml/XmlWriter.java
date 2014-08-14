@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 import org.isis.logserver.message.LogMessage;
+import org.isis.logserver.message.LogMessageFields;
 
 public class XmlWriter 
 {
@@ -21,14 +22,17 @@ public class XmlWriter
 	//	tags in the XML reader in any client code (e.g. Eclipse CSS)
 	private static final String MESSAGE_TAG = "message";
 	
-	private static final String CONTENTS_TAG = "contents";
-	private static final String SEVERITY_TAG = "severity";
-	private static final String EVENTTIME_TAG = "eventTime";
-	private static final String CREATETIME_TAG = "createTime";
-	private static final String CLIENTNAME_TAG = "clientName";
-	private static final String CLIENTHOST_TAG = "clientHost";
-	private static final String TYPE_TAG = "type";
-	private static final String APPID_TAG = "applicationId";
+	private static final LogMessageFields[] XML_FIELDS = {
+		LogMessageFields.CONTENTS,
+		LogMessageFields.SEVERITY,
+		LogMessageFields.EVENT_TIME,
+		LogMessageFields.CREATE_TIME,
+		LogMessageFields.EVENT_TIME,
+		LogMessageFields.CLIENT_NAME,
+		LogMessageFields.CLIENT_HOST,
+		LogMessageFields.TYPE,		
+		LogMessageFields.APPLICATION_ID
+	};
 	
 	/**
 	 * Convert the message in to an XML format that can be sent over JMS
@@ -39,23 +43,19 @@ public class XmlWriter
 		
 		xml.append(makeOpenTag(MESSAGE_TAG));
 		
-		xml.append(makeElement(CONTENTS_TAG, message.getContents()));
-		xml.append(makeElement(SEVERITY_TAG, message.getSeverity()));
-		xml.append(makeElement(EVENTTIME_TAG, message.getEventTime()));
-		xml.append(makeElement(CREATETIME_TAG, message.getCreateTime()));
-		xml.append(makeElement(CLIENTNAME_TAG, message.getClientName()));
-		xml.append(makeElement(CLIENTHOST_TAG, message.getClientHost()));
-		xml.append(makeElement(TYPE_TAG, message.getType()));
-		xml.append(makeElement(APPID_TAG, message.getApplicationId()));
+		for(LogMessageFields field: XML_FIELDS)
+		{
+			xml.append(makeElement(field, message.getProperty(field)));
+		}
 		
 		xml.append(makeCloseTag(MESSAGE_TAG));
 		
 		return xml.toString();
 	}
 	
-	public static String makeElement(String tag, String data)
+	public static String makeElement(LogMessageFields field, String data)
 	{
-		return makeOpenTag(tag) + data.toString() + makeCloseTag(tag);
+		return makeOpenTag(field.getTagName()) + data.toString() + makeCloseTag(field.getTagName());
 	}
 	
 	public static String makeElement(String tag, Calendar time)

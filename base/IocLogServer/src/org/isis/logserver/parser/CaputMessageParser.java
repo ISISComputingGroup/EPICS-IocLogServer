@@ -14,7 +14,7 @@ import java.util.Calendar;
 
 import org.isis.logserver.message.LogMessage;
 
-public class CaputMessageParser extends ClientMessageParser 
+public class CaputMessageParser implements ClientMessageParser 
 {
     /** Default severity */
     static final String SEVERITY = "NORMAL";

@@ -14,7 +14,7 @@ import java.util.Calendar;
 
 import org.isis.logserver.message.LogMessage;
 
-public class IocMessageParser extends ClientMessageParser 
+public class IocMessageParser implements ClientMessageParser 
 {
 	
     /** Default severity */

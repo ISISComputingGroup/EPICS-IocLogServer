@@ -10,6 +10,7 @@
  */
 package org.isis.logserver.message;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 
@@ -81,5 +82,87 @@ public class LogMessage
 	}
 	public void setApplicationId(String applicationId) {
 		this.applicationId = applicationId;
+	}
+	
+	public void setProperty(LogMessageFields property, String value)
+	{
+		switch(property)
+		{
+			case CONTENTS:
+				contents = value;
+				break;
+			case SEVERITY:
+				severity = value;
+				break;
+			case CLIENT_NAME:
+				clientName = value;
+				break;
+			case CLIENT_HOST:
+				clientHost = value;
+				break;
+			case TYPE:
+				type = value;
+				break;
+			case APPLICATION_ID:
+				applicationId = value;
+				break;
+			default:
+				new Throwable().getStackTrace();
+		}
+	}
+	
+	public void setProperty(LogMessageFields property, Calendar value)
+	{
+		switch(property)
+		{
+			case EVENT_TIME:
+				eventTime = value;
+				break;
+			case CREATE_TIME:
+				createTime = value;
+				break;
+				
+			default:
+				new Throwable().getStackTrace();
+		}	
+	}
+	
+	public String getProperty(LogMessageFields property)
+	{
+		switch(property)
+		{
+			case CONTENTS:
+				return contents;
+			case SEVERITY:
+				return severity;
+			case EVENT_TIME:
+				return timeToString(eventTime);
+			case CREATE_TIME:
+				return timeToString(createTime);	
+			case CLIENT_NAME:
+				return clientName;
+			case CLIENT_HOST:
+				return clientHost;
+			case TYPE:
+				return type;
+			case APPLICATION_ID:
+				return applicationId;
+			default:
+				new Throwable().getStackTrace();
+				return null;
+		}
+	}
+	
+	public static String timeToString(Calendar time)
+	{
+		if(time == null) {
+			return "";
+		}
+		
+		Timestamp timestamp = new Timestamp(time.getTimeInMillis());
+		int num_chars = Math.min(23, timestamp.toString().length()); // only want milliseconds, not nanoseconds
+		String timePrint = timestamp.toString().substring(0,num_chars);
+		
+		return timePrint;
 	}
 }

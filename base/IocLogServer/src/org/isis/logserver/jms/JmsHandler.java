@@ -236,7 +236,6 @@ public class JmsHandler implements Runnable
 		connection.setExceptionListener(new ExceptionListener() {
 			@Override
 			public void onException(final JMSException ex) {
-				// Activator.getLogger().log(Level.SEVERE, "JMS Exception", ex);
 				System.out.println("Lost connection to JMS server: " + url);
 				connectedToJms = false;
 			}
@@ -265,15 +264,11 @@ public class JmsHandler implements Runnable
 		try {
 			closeProducer();
 		} catch (Exception ex) {
-			// Activator.getLogger().log(Level.WARNING, "JMS shutdown error",
-			// ex);
 			System.out.println("JMS shutdown error: " + ex);
 		}
 		try {
 			session.close();
 		} catch (JMSException ex) {
-			// Activator.getLogger().log(Level.WARNING, "JMS shutdown error",
-			// ex);
 			System.out.println("JMS shutdown error: " + ex);
 		}
 	}

@@ -67,7 +67,9 @@ public class RdbHandler implements Runnable
 					int timeoutSeconds = 1;
 					isConnected = rdb.getConnection().isValid(timeoutSeconds);
 				}
-				catch(Exception ex) {}
+				catch(Exception ex) {
+					System.out.println("SQL Error attempting to connect to database.");
+				}
 			}
 			
 			if(isConnected)

@@ -12,7 +12,7 @@ package org.isis.logserver.parser;
 
 import org.isis.logserver.message.LogMessage;
 
-public abstract class ClientMessageParser 
+public interface ClientMessageParser 
 {
-	abstract public LogMessage parse(String text); 
+	LogMessage parse(String text); 
 }

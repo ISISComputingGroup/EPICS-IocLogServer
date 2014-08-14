@@ -22,6 +22,7 @@ import org.isis.logserver.message.MessageFilter;
 import org.isis.logserver.message.MessageMatcher;
 import org.isis.logserver.message.MessageState;
 import org.isis.logserver.parser.ClientMessageParser;
+import org.isis.logserver.parser.XmlMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
 
 /**
@@ -55,7 +56,8 @@ public class ClientHandler implements Runnable
 
     final private MessageFilter filter = MessageFilter.getInstance();
     
-    private ClientMessageParser messageParser;  
+    private ClientMessageParser messageParser;
+    private ClientMessageParser xmlParser; 
     
     
 
@@ -76,6 +78,8 @@ public class ClientHandler implements Runnable
 
         this.application_id = STANDALONE_LOG_SERVER;
         System.out.println("IOC Client " + client_host + ":" + client_socket.getPort() + " connected");
+        
+        xmlParser = new XmlMessageParser();
     }
 
     /** Thread runnable */
@@ -125,7 +129,16 @@ public class ClientHandler implements Runnable
     private void logMessage(String message, Calendar timeReceived) throws Exception
     {
     	// Create the message
-    	LogMessage clientMessage = messageParser.parse(message);
+    	LogMessage clientMessage = null;
+    	if(isMessageXml(message)) {
+    		clientMessage = xmlParser.parse(message);
+    	} 
+
+    	// null will be returned if xml fails to parse correctly
+    	if(clientMessage == null) {
+    		clientMessage = messageParser.parse(message);
+    	}
+    	
     	clientMessage.setClientHost(client_host);
     	clientMessage.setApplicationId(application_id);
     	clientMessage.setCreateTime(timeReceived);
@@ -143,90 +156,14 @@ public class ClientHandler implements Runnable
 				jmsHandler.addToDispatchQueue(clientMessage);
 			}
         }
-
-    	
-    	/*
-    	// CONNECT TO DB
-        RDBWriter rdbwriter = null;
-        try
-        {
-        	Connection dbConnection = rdbHandler.getConnection();
-        	rdbwriter = new RDBWriter("msg_log", dbConnection);
-        }
-        catch(Exception ex)
-        {
-        	System.out.println("Could not connect to Database. Message not saved: " + text);
-        }
-        
-        
-    	try
-    	{	    			    		
-    		synchronized (filter)
-            {
-    			final MessageState info = filter.checkMessageState(client_host, text);
-    			
-    			// SEND MESSAGE BY JMS
-    			if(info.isNewMessage())
-    			{
-    				jmsDispatcher.addToDispatchQueue(text);
-    			}
-
-    			// SEND MESSAGE TO DB
-    			if(rdbwriter != null)
-    			{
-	    	        if(info.isNewMessage())   	//new message or new client
-	    	        {	    	        	
-	    	        	if(info.hadPreviousMessage()) //if there is a previous message, update repeats in rdb
-	    	        	{	    	        		
-			        		final int prev_msg_repeats = info.getPreviousRepeatCount();
-			        		final long prev_msg_id = info.getPreviousMessageID();
-			        		
-	                        if (prev_msg_repeats > 0  &&  prev_msg_repeats < REPEAT_THRESHOLD)
-	                        {
-			        			rdbwriter.addProperty(prev_msg_id, REPEATED_PROPERTY, prev_msg_repeats+"");
-	                        }
-	                        else if (prev_msg_repeats >= REPEAT_THRESHOLD)
-	                        {
-			        			rdbwriter.updateProperty(prev_msg_id, REPEATED_PROPERTY, prev_msg_repeats+"");
-	                        }
-			        	}
-	
-	    	        	//save new message to rdb	    	        	
-	    	        	final Map <String, String> map = createMap(client_host, text, application_id, eventtime);
-	    	        	final long msg_id = rdbwriter.write(severity, name, map);
-						info.setMessageID(msg_id);					
-	    	        }
-	    	        
-	    	        else //same message same client
-	    	        {	    	        	
-	    	            final int repeats = info.getRepeatCount();
-	    	            final long msg_id = info.getMessageID();
-	
-	    	        	if (repeats > 0)
-	    	        	{
-		    	        	if (repeats % REPEAT_THRESHOLD == 0)
-		    	        	{
-		    	        		if (repeats == REPEAT_THRESHOLD)
-		    	        		{
-		    	        			rdbwriter.addProperty(msg_id, REPEATED_PROPERTY, repeats+"");
-		    	        		}
-		    	        		else if (repeats > REPEAT_THRESHOLD)
-		    	        		{
-		    	        			rdbwriter.updateProperty(msg_id, REPEATED_PROPERTY, repeats+"");
-		    	        		}
-		    	        	}
-	    	        	}
-	    	        }	
-    			}
-            }
-    	}
-    	finally
-    	{
-    		if(rdbwriter != null)
-    		{
-    			rdbwriter.close();
-    		}
-		}
-		*/
+    }
+    
+    /**
+     * Determines whether the message received from the IOC is XML formatted.
+     * TODO: this is a naive implementation; improve it.
+     */
+    private boolean isMessageXml(String msg)
+    {
+    	return msg.trim().startsWith("<");
     }
 }
