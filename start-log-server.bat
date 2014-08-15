@@ -8,15 +8,13 @@ call %MYDIRBLOCK%..\..\config_env_base.bat
 
 cd %LOGDIRBLOCK%base\IOCLogServer\
 
-IF NOT EXIST ioc-log-server.jar (
-    echo Building IOC Log Server
-	call ant -q clean build-jar
-)
-
-cd %LOGDIRBLOCK%base\IOCLogServer\
+REM IF NOT EXIST ioc-log-server.jar (
+REM     echo Building IOC Log Server
+REM 	call ant -q clean build-jar
+REM )
+REM cd %LOGDIRBLOCK%base\IOCLogServer\
 
 java -jar ioc-log-server.jar
-
 
 REM return to previous working directory
 cd %CURRWORKINGDIR%
