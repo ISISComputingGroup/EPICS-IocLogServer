@@ -13,6 +13,7 @@ package org.isis.logserver.parser;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Calendar;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,6 +21,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.isis.logserver.message.LogMessage;
 import org.isis.logserver.message.LogMessageFields;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -30,9 +34,8 @@ import org.xml.sax.SAXException;
  * Parses messages that are received from the IOC in an XML format
  *
  */
-public class XmlMessageParser implements ClientMessageParser
+public class XmlMessageParser
 {
-	@Override
 	public LogMessage parse(String text) 
 	{
 		LogMessage message = xmlToLogMessage(text);
@@ -42,23 +45,17 @@ public class XmlMessageParser implements ClientMessageParser
 			return null;
 		}
 		
-		if(message.getContents() == null || message.getContents().equals("")) {
+		if(message.getContents() == null) {
 			message.setContents(text);
 		}
-		
+
 		message.setRawMessage(text);
-		message.setType("IOC Error Log");
-		
-		// temp - setting event time from current time rather than parsing from message
-		message.setEventTime(Calendar.getInstance());
 		
 		return message;
 	}
 	
 	public LogMessage xmlToLogMessage(String xml)
-	{
-		LogMessage message = new LogMessage();
-		
+	{	
 		Node root;
 		try
 		{
@@ -70,6 +67,7 @@ public class XmlMessageParser implements ClientMessageParser
 			return null;
 		}
 		
+		LogMessage message = new LogMessage();
 		NodeList messageProperties = root.getChildNodes();
 		
 		for(int i=0; i<messageProperties.getLength(); ++i)
@@ -81,7 +79,24 @@ public class XmlMessageParser implements ClientMessageParser
 			try
 			{
 				LogMessageFields field = LogMessageFields.getFieldByTagName(tag);
-				message.setProperty(field, value);
+				
+				boolean isTimeField = tag.equals(LogMessageFields.EVENT_TIME.getTagName()) ||
+						tag.equals(LogMessageFields.CREATE_TIME.getTagName());
+				
+				// time fields must be transformed from string to calendar
+				if(isTimeField)
+				{
+					// Parse ISO 8601 compliant date using joda-time
+					DateTimeFormatter timeParser = ISODateTimeFormat.dateTime();
+					DateTime dateTime = timeParser.parseDateTime(value);
+					Calendar time = dateTime.toCalendar(Locale.UK);
+					message.setProperty(field, time);
+				}
+				else
+				{
+					message.setProperty(field, value);
+				}
+				
 			}
 			catch(IllegalArgumentException ex)
 			{

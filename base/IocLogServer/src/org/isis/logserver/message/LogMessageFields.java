@@ -27,24 +27,22 @@ class LogMessageFieldTags
 
 public enum LogMessageFields 
 {
-	CONTENTS ("Content", LogMessageFieldTags.TAG_CONTENTS, 500),
-	SEVERITY ("Severity", LogMessageFieldTags.TAG_SEVERITY, 100),
-	EVENT_TIME ("Event Time", LogMessageFieldTags.TAG_EVENTTIME, 200),
-	CREATE_TIME ("Create Time", LogMessageFieldTags.TAG_CREATETIME, 0),
-	CLIENT_NAME ("Sender", LogMessageFieldTags.TAG_CLIENTNAME, 150),
-	CLIENT_HOST ("Sender Host", LogMessageFieldTags.TAG_CLIENTHOST, 0),
-	TYPE ("Type", LogMessageFieldTags.TAG_TYPE, 100),
-	APPLICATION_ID ("Application ID", LogMessageFieldTags.TAG_APPID, 0);
+	CONTENTS ("Content", LogMessageFieldTags.TAG_CONTENTS),
+	SEVERITY ("Severity", LogMessageFieldTags.TAG_SEVERITY),
+	EVENT_TIME ("Event Time", LogMessageFieldTags.TAG_EVENTTIME),
+	CREATE_TIME ("Create Time", LogMessageFieldTags.TAG_CREATETIME),
+	CLIENT_NAME ("Sender", LogMessageFieldTags.TAG_CLIENTNAME),
+	CLIENT_HOST ("Sender Host", LogMessageFieldTags.TAG_CLIENTHOST),
+	TYPE ("Type", LogMessageFieldTags.TAG_TYPE),
+	APPLICATION_ID ("Application ID", LogMessageFieldTags.TAG_APPID);
 	
 	private String displayName;
 	private String tagName;
-	private int defaultColumnWidth;
 	
-	private LogMessageFields(String displayName, String tagName, int defaultColumnWidth)
+	private LogMessageFields(String displayName, String tagName)
 	{
 		this.displayName = displayName;
 		this.tagName = tagName;
-		this.defaultColumnWidth = defaultColumnWidth;
 	}
 
 	public String getDisplayName() {
@@ -53,10 +51,6 @@ public enum LogMessageFields
 	
 	public String getTagName() {
 		return tagName;
-	}
-
-	public int getDefaultColumnWidth() {
-		return defaultColumnWidth;
 	}
 
 	@Override

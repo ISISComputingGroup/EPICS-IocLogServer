@@ -16,6 +16,17 @@ import java.util.Calendar;
 
 public class LogMessage 
 {
+	private static LogMessageFields STRING_FIELDS[] = new LogMessageFields[]{
+		LogMessageFields.CONTENTS,
+		LogMessageFields.APPLICATION_ID,
+		LogMessageFields.CLIENT_HOST,
+		LogMessageFields.CLIENT_NAME,
+		LogMessageFields.CREATE_TIME,
+		LogMessageFields.EVENT_TIME,
+		LogMessageFields.SEVERITY,
+		LogMessageFields.TYPE
+	};
+	
 	// message info
 	private String rawMessage;
 	private String contents;
@@ -28,6 +39,23 @@ public class LogMessage
 	private String clientHost;
 	private Calendar createTime;
 	private String applicationId;
+	
+	public LogMessage() {}
+	
+	// copy constructor
+	public LogMessage(LogMessage otherMessage)
+	{
+		if(otherMessage != null) {
+			for(LogMessageFields field : STRING_FIELDS)
+			{
+				String value = otherMessage.getProperty(field);
+				this.setProperty(field, value);
+			}
+			
+			this.setEventTime(otherMessage.getEventTime());
+			this.setCreateTime(otherMessage.getCreateTime());
+		}
+	}
 	
 	public String getRawMessage() {
 		return rawMessage;
@@ -121,10 +149,9 @@ public class LogMessage
 			case CREATE_TIME:
 				createTime = value;
 				break;
-				
 			default:
 				new Throwable().getStackTrace();
-		}	
+		}
 	}
 	
 	public String getProperty(LogMessageFields property)

@@ -18,7 +18,6 @@ import org.isis.logserver.jms.JmsHandler;
 import org.isis.logserver.message.MessageMatcher;
 import org.isis.logserver.parser.CaputMessageParser;
 import org.isis.logserver.parser.ClientMessageParser;
-import org.isis.logserver.parser.IocMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
 
 /**
@@ -79,10 +78,6 @@ public class PortListener extends Thread
 		if(port == 7011)
 		{
 			parser = new CaputMessageParser();
-		}
-		else
-		{
-			parser = new IocMessageParser();
 		}
 		
         while(active)

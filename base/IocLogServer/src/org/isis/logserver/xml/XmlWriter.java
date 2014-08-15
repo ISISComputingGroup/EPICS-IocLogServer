@@ -10,9 +10,6 @@
  */
 package org.isis.logserver.xml;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-
 import org.isis.logserver.message.LogMessage;
 import org.isis.logserver.message.LogMessageFields;
 
@@ -41,11 +38,15 @@ public class XmlWriter
 	{
 		StringBuilder xml = new StringBuilder();
 		
+		xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		xml.append(makeOpenTag(MESSAGE_TAG));
 		
 		for(LogMessageFields field: XML_FIELDS)
 		{
-			xml.append(makeElement(field, message.getProperty(field)));
+			String value = message.getProperty(field);
+			if(value != null) {
+				xml.append(makeElement(field, value));
+			}
 		}
 		
 		xml.append(makeCloseTag(MESSAGE_TAG));
@@ -55,16 +56,7 @@ public class XmlWriter
 	
 	public static String makeElement(LogMessageFields field, String data)
 	{
-		return makeOpenTag(field.getTagName()) + data.toString() + makeCloseTag(field.getTagName());
-	}
-	
-	public static String makeElement(String tag, Calendar time)
-	{
-		Timestamp timestamp = new Timestamp(time.getTimeInMillis());
-		int num_chars = Math.min(23, timestamp.toString().length()); // only want milliseconds, not nanoseconds
-		String timePrint = timestamp.toString().substring(0,num_chars); 
-				
-		return makeOpenTag(tag) + timePrint + makeCloseTag(tag);
+		return makeOpenTag(field.getTagName()) + makeContents(data) + makeCloseTag(field.getTagName());
 	}
 	
 	public static String makeOpenTag(Object tag)
@@ -75,6 +67,11 @@ public class XmlWriter
 	public static String makeCloseTag(Object tag)
 	{
 		return "</" + tag + ">";
+	}
+	
+	public static String makeContents(Object contents)
+	{
+		return"<![CDATA[" + contents.toString() + "]]>";
 	}
 
 }

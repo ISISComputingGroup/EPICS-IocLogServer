@@ -14,5 +14,5 @@ import org.isis.logserver.message.LogMessage;
 
 public interface ClientMessageParser 
 {
-	LogMessage parse(String text); 
+	LogMessage parse(String text, LogMessage logMessage); 
 }

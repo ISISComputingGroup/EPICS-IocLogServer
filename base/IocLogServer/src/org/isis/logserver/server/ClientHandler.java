@@ -11,6 +11,7 @@
 package org.isis.logserver.server;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Calendar;
@@ -57,7 +58,7 @@ public class ClientHandler implements Runnable
     final private MessageFilter filter = MessageFilter.getInstance();
     
     private ClientMessageParser messageParser;
-    private ClientMessageParser xmlParser; 
+    private XmlMessageParser xmlParser; 
     
     
 
@@ -84,37 +85,51 @@ public class ClientHandler implements Runnable
 
     /** Thread runnable */
     public void run ()
-    {
-        try
+    {	
+        try(InputStream inputStream = client_socket.getInputStream();
+        		InputStreamReader isReader = new InputStreamReader(inputStream);
+        		BufferedReader rdr = new BufferedReader(isReader))
         {
             // If called as log server, we keep reading messages from
             // the client, logging each one
-        	String msg;
-            final BufferedReader rdr = new BufferedReader (new InputStreamReader(client_socket.getInputStream()) );
-            while ((msg = rdr.readLine())!= null)
+        	String line;
+        	String message = "";
+            
+            while ((line = rdr.readLine())!= null)
             {
             	final Calendar calendar = Calendar.getInstance();
         		
-        		msg = msg.trim();	  
-                
-                if (msg.length() <= 0)
+        		// check if message is empty
+            	line = line.trim();
+                if (line.length() <= 0)
                 {
-                    System.out.println(new Date() + "  Empty message from " + client_host);
                     continue;
                 }
+
+        		message += line;
                 
-            	final boolean suppressible = matcher.check(msg);
+                // Plain string messages are delimited by '\n', however XML formatted messages may contain '\n'
+                //	inside the message. Check if message is a half-completed XML formatted message, and if so
+        		//	continue to next loop iteration to collect the rest of the message.
+        		if(isMessageStartXml(message) && !isMessageEndXml(message))
+        		{
+        			continue;
+        		}
+                
+            	final boolean suppressible = matcher.check(message);
             	
-            	System.out.println("Message received from "+ client_host + ":" + client_socket.getPort() + " - " +  msg);
+            	System.out.println("Message received from "+ client_host + ":" + client_socket.getPort() + " - " +  message);
             	
             	if (suppressible==false) 
             	{
-            		logMessage(msg, calendar);
+            		logMessage(message, calendar);
             	}
             	else
             	{
-            	    System.out.println(new Date() + "  Suppressed: " + client_host + " message '" + msg + "'");
+            	    System.out.println(new Date() + "  Suppressed: " + client_host + " message '" + message + "'");
             	}
+            	
+            	message = "";
             }
         }
         catch (Exception e)
@@ -126,22 +141,67 @@ public class ClientHandler implements Runnable
     /** Log current text, severity, ... to RDB
      *  @throws Exception on error
      */
-    private void logMessage(String message, Calendar timeReceived) throws Exception
+    private void logMessage(String messageStr, Calendar timeReceived) throws Exception
     {
     	// Create the message
     	LogMessage clientMessage = null;
-    	if(isMessageXml(message)) {
-    		clientMessage = xmlParser.parse(message);
+    	
+    	// If message is XML formatted, parse it
+    	if(isMessageXml(messageStr)) 
+    	{
+    		clientMessage = xmlParser.parse(messageStr);
+    		
+    		// if the message was xml formatted the actual contents of the message (contained in
+    		//	the 'contents' xml element) may need to be processed further
+    		if(clientMessage != null && messageParser != null) {
+    			String contents = clientMessage.getContents();
+    			clientMessage = messageParser.parse(contents, clientMessage);
+    		}
     	} 
 
-    	// null will be returned if xml fails to parse correctly
-    	if(clientMessage == null) {
-    		clientMessage = messageParser.parse(message);
+    	// if message wasn't XML formatted or XML parsing failed
+    	if(clientMessage == null) 
+    	{
+    		// use the supplied parser or just treat the raw text as the message contents
+    		if(messageParser != null) 
+    		{
+    			clientMessage = messageParser.parse(messageStr, clientMessage);
+    		} 
+    		else 
+    		{
+    			clientMessage = new LogMessage();
+    			clientMessage.setContents(messageStr);
+    		}
     	}
+    	
+    	// If the contents is empty, drop message
+    	String contents = clientMessage.getContents();
+    	if(contents == null || contents.trim().equals("") ) {
+			return;
+		}
+    	
+    	// Fill property in blanks if any
+		if(clientMessage.getEventTime() == null) {
+			clientMessage.setEventTime(Calendar.getInstance());
+		}
+		
+		if(clientMessage.getClientName() == null) {
+			clientMessage.setClientName("UNKNOWN");
+		}
+		
+		if(clientMessage.getSeverity() == null) {
+			clientMessage.setSeverity("-");
+		}
+		
+		if(clientMessage.getType() == null) {
+			clientMessage.setType("-");
+		}
+		
     	
     	clientMessage.setClientHost(client_host);
     	clientMessage.setApplicationId(application_id);
     	clientMessage.setCreateTime(timeReceived);
+    	clientMessage.setRawMessage(messageStr);
     	
     	// TODO: filter out repeat messages
 
@@ -154,6 +214,7 @@ public class ClientHandler implements Runnable
 			{
 				rdbHandler.saveMessageToDb(clientMessage);
 				jmsHandler.addToDispatchQueue(clientMessage);
+				//System.out.println(message);
 			}
         }
     }
@@ -163,7 +224,20 @@ public class ClientHandler implements Runnable
      * TODO: this is a naive implementation; improve it.
      */
     private boolean isMessageXml(String msg)
+    {   	
+    	// check that message starts and ends with the expected xml tags
+    	return isMessageStartXml(msg) && isMessageEndXml(msg);
+    }
+    
+    private boolean isMessageStartXml(String msg)
     {
-    	return msg.trim().startsWith("<");
+    	String trimmedMsg = msg.trim();
+    	return trimmedMsg.startsWith("<?xml") || trimmedMsg.startsWith("<message");
+    }
+    
+    private boolean isMessageEndXml(String msg)
+    {
+    	String trimmedMsg = msg.trim();
+    	return trimmedMsg.endsWith("</message>");
     }
 }
