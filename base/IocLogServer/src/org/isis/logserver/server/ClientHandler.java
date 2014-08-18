@@ -214,7 +214,6 @@ public class ClientHandler implements Runnable
 			{
 				rdbHandler.saveMessageToDb(clientMessage);
 				jmsHandler.addToDispatchQueue(clientMessage);
-				//System.out.println(message);
 			}
         }
     }
