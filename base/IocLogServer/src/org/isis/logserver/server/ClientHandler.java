@@ -106,6 +106,11 @@ public class ClientHandler implements Runnable
                     continue;
                 }
 
+                if(!message.equals(""))
+                {
+                	message += '\n';
+                }
+                
         		message += line;
                 
                 // Plain string messages are delimited by '\n', however XML formatted messages may contain '\n'
