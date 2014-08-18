@@ -1,6 +1,10 @@
 @echo off
+set CURRWORKINGDIR=%cd%
 set MYDIRBLOCK=%~dp0
 
-cd %MYDIRBLOCK%base\IOCLogServer\
+cd %MYDIRBLOCK%\LogServer
 
-ant clean
+mvn clean
+
+REM return to previous working directory
+cd %CURRWORKINGDIR%

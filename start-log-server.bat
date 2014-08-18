@@ -6,15 +6,9 @@ call %LOGDIRBLOCK%..\..\config_env_base.bat
 
 %HIDEWINDOW% h
 
-cd %LOGDIRBLOCK%base\IOCLogServer\
+cd %LOGDIRBLOCK%LogServer\target\
 
-REM IF NOT EXIST ioc-log-server.jar (
-REM     echo Building IOC Log Server
-REM 	call ant -q clean build-jar
-REM )
-REM cd %LOGDIRBLOCK%base\IOCLogServer\
-
-java -jar ioc-log-server.jar
+java -jar IocLogServer-1.0-SNAPSHOT.jar
 
 REM return to previous working directory
 cd %CURRWORKINGDIR%

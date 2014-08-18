@@ -9,5 +9,5 @@ type			- The type of the message (possible values to be determined).
 severity		- The message severity (possible values to be determined).
 clientName		- The name of the IOC (as supplied by the IOC in its message).
 clientHost 		- The name/address of the machine that the IOC is on.
-applicationId	- The application that processed the message (typically log server).
+applicationId		- The application that processed the message (typically log server).
 repeatCount		- The number of times the message has been repeated in succession.
