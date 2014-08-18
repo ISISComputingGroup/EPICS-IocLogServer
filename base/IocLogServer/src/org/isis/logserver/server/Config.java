@@ -101,15 +101,10 @@ public class Config
 			return;
 		}
 		
-		try
-		{
-		    // Open the file
-		    FileInputStream fstream = new FileInputStream(filename);
-		     
-		    // Get the object of DataInputStream
-		    DataInputStream in = new DataInputStream(fstream);
-		        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-		         
+		try(FileInputStream fstream = new FileInputStream(filename);
+				DataInputStream in = new DataInputStream(fstream);
+		        BufferedReader br = new BufferedReader(new InputStreamReader(in));)
+		{	         
 		    String strLine;
 		     
 		    //Read File Line By Line
@@ -131,9 +126,6 @@ public class Config
 		    }
 		    
 		    System.out.println("Configuration loaded from file: '" + filename + "'");
-		     
-		    //Close the input stream
-		    in.close();
 		}
 		catch (Exception ex)
 		{
@@ -222,10 +214,8 @@ public class Config
 	 */
 	public void saveConfigToFile(String filename)
 	{
-		PrintWriter out = null;
-		try 
+		try(PrintWriter out = new PrintWriter(filename)) 
 		{
-			out = new PrintWriter(filename);
 			out.println(configToText());
 		} 
 		catch (FileNotFoundException e) 
@@ -233,13 +223,6 @@ public class Config
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		finally
-		{
-			if(out != null) {
-				out.close();
-			}
-		}
-
 	}
 	
 	/**

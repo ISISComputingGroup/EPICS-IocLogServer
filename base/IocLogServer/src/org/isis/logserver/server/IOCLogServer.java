@@ -39,9 +39,9 @@ import org.isis.logserver.rdb.RdbHandler;
  */
 public class IOCLogServer
 {
-    final private static String SUPPRESSIONS =  "config/suppression.txt";
+    final private static String SUPPRESSIONS =  "suppression.txt";
     
-    private static final String CONFIG_FILE =  "config/logserver_config.ini";
+    private static final String CONFIG_FILE =  "logserver_config.ini";
 
     /** Listen for incoming connections and handle them */
     public static void main(String[] args)
