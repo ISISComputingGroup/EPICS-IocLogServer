@@ -26,6 +26,11 @@
         </configuration>
       </plugin>
       
+      <!-- 
+      		Create a jar file and package the dependencies 
+      		(libraries: joda-time, activemq, mysql) with it.
+      		Build with the command 'mvn package assembly:single'.
+       -->
 	  <plugin>
 		<artifactId>maven-assembly-plugin</artifactId>
 		<configuration>
@@ -41,7 +46,42 @@
 		</configuration>
 	  </plugin>
 	  
+	  <!-- 
+	  		Make source file jar
+	   -->
+	  <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-source-plugin</artifactId>
+		<executions>
+		  <execution>
+		    <id>attach-sources</id>
+		    <goals>
+		      <goal>jar</goal>
+		    </goals>
+		  </execution>
+		</executions>
+	  </plugin>
+		
+	  <!-- 
+	  		Make javadoc jar
+	   -->
+	  <plugin>
+  		<groupId>org.apache.maven.plugins</groupId>
+  		<artifactId>maven-javadoc-plugin</artifactId>
+  		<executions>
+    	  <execution>
+      		<id>attach-javadocs</id>
+      		<goals>
+        	  <goal>jar</goal>
+      		</goals>
+    	  </execution>
+  		</executions>
+	  </plugin>
 	  
+	  <!-- 
+	  		Run FindBugs checks as part of the verify phase
+	  		(run with the command 'mvn verify').
+	   -->
 	   <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
@@ -74,6 +114,10 @@
             </executions>
         </plugin>
 		
+	   <!-- 
+	  		Run PMD checks as part of the verify phase
+	  		(run with the command 'mvn verify').
+	   -->
 		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-pmd-plugin</artifactId>
@@ -95,7 +139,6 @@
 	          <targetJdk>1.7</targetJdk>
 	        </configuration>
 		</plugin>
-	  
 	  
     </plugins>
   </build>
