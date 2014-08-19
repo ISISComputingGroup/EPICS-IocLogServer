@@ -7,6 +7,9 @@ DEFAULT_PORT = 7004
 
 RETRY_DELAY = 1
 
+MSG_START = "<message><clientName>IOC_DEMO</clientName><type>SIM_MSG</type><severity>MINOR</severity><contents><![CDATA["
+MSG_END = "]]></contents></message>"
+
 
 def connect(host, port):
     started = False
@@ -43,12 +46,15 @@ if __name__ == '__main__':
     
     print "Enter message to send or type 'exit': "
     while True:
-        data = raw_input("msg> ")
-
-        sock.send(data + "\n")
-
-        if data == "exit":
-            break
+        try:
+            data = raw_input("msg> ")
+            sock.send(MSG_START + data + MSG_END + "\n")
+            if data == "exit":
+                break    
+                
+        except Exception:
+            print "Lost connection to IOC Log server. Attempting to reestablish"
+            sock = connect(host, port)
 
     sock.close()
 
