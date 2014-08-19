@@ -12,6 +12,7 @@ package org.isis.logserver.rdb;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import org.isis.logserver.server.Config;
 
@@ -51,9 +52,9 @@ public class Rdb
 	    {
 	        connection.close();
 	    }
-	    catch (Exception e)
+	    catch (SQLException ex)
 	    {
-	        // Ignore, we're closing anyway
+	        System.out.println("Error closing RDB connection: " + ex.getMessage());
         }
 	}
 }

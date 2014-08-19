@@ -34,7 +34,7 @@ public class XmlWriter
 	/**
 	 * Convert the message in to an XML format that can be sent over JMS
 	 */
-	public static String MessageToXmlString(LogMessage message)
+	public static String messageToXmlString(LogMessage message)
 	{
 		StringBuilder xml = new StringBuilder();
 		

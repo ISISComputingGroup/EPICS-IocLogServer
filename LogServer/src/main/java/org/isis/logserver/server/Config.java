@@ -15,9 +15,11 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -127,7 +129,7 @@ public class Config
 		    
 		    System.out.println("Configuration loaded from file: '" + filename + "'");
 		}
-		catch (Exception ex)
+		catch (IOException ex)
 		{
 			System.out.println("Error reading config file; using default configuration");
 			setDefaults();
@@ -196,7 +198,9 @@ public class Config
 							portList.add(portInt);
 						}
 					}
-					catch(Exception ex) {}
+					catch(NumberFormatException ex) {
+						System.out.println("Error reading listen ports: " + ex.getMessage());
+					}
 				}
 				
 				listenPorts = portList.toArray(new Integer[portList.size()]);
@@ -305,7 +309,7 @@ public class Config
 		return sqlSchema;
 	}
 
-	public Integer[] getListenPorts() {
-		return listenPorts;
+	public List<Integer> getListenPorts() {
+		return Arrays.asList(listenPorts);
 	}
 }

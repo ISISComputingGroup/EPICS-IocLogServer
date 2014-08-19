@@ -13,6 +13,7 @@ package org.isis.logserver.rdb;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
@@ -26,7 +27,7 @@ public class RdbWriter
 {
     final Connection rdbConnection;
    
-    public RdbWriter(Connection rdbConnection) throws Exception
+    public RdbWriter(Connection rdbConnection) throws SQLException
     {       
     	this.rdbConnection = rdbConnection;
 
@@ -34,51 +35,63 @@ public class RdbWriter
         rdbConnection.setAutoCommit(false);
     }
     
-    public int saveLogMessageToDb(LogMessage message) throws Exception
+    public int saveLogMessageToDb(LogMessage message) throws SQLException
     {
-        PreparedStatement preparedInsertStatement =
-        		rdbConnection.prepareStatement(Sql.INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS);
+    	PreparedStatement preparedInsertStatement = null;
+    	ResultSet result = null;
+    	int newId;
 		
-        int property = 0;
-
-        Timestamp eventTime = new Timestamp(message.getEventTime().getTimeInMillis());
-        Timestamp createTime = new Timestamp(message.getCreateTime().getTimeInMillis());
-
-        preparedInsertStatement.setTimestamp(++property, eventTime);
-        preparedInsertStatement.setTimestamp(++property, createTime);
+        try
+        {
+            preparedInsertStatement = rdbConnection.prepareStatement(Sql.INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS);
+            
+	        int property = 0;
+	
+	        Timestamp eventTime = new Timestamp(message.getEventTime().getTimeInMillis());
+	        Timestamp createTime = new Timestamp(message.getCreateTime().getTimeInMillis());
+	
+	        preparedInsertStatement.setTimestamp(++property, eventTime);
+	        preparedInsertStatement.setTimestamp(++property, createTime);
+	        	
+	        preparedInsertStatement.setString(++property, message.getType());
+	        preparedInsertStatement.setString(++property, message.getContents());
+	        preparedInsertStatement.setString(++property, message.getClientName());
+	        preparedInsertStatement.setString(++property, message.getSeverity());
+	        preparedInsertStatement.setString(++property, message.getClientHost());
+	        preparedInsertStatement.setString(++property, message.getApplicationId());
+	        
+	        // Repeat count
+	        preparedInsertStatement.setInt(++property, 1);
+	
+	        // Add message to Db
+	        preparedInsertStatement.executeUpdate();
+	        
+	        // Read auto-assigned unique message ID
+	        result = preparedInsertStatement.getGeneratedKeys();
+	        
+	        if (result.next())
+	        {
+	        	newId = result.getInt(1);
+	        }
+	        else
+	        {
+	            throw new SQLException("Cannot obtain next message ID");
+	        }
+	        
+	        // Commit the result
+	        rdbConnection.commit();
+        }
+        finally
+        {
+	        // Close connections
+        	if(result != null) {
+        		result.close();
+        	}
         	
-        preparedInsertStatement.setString(++property, message.getType());
-        preparedInsertStatement.setString(++property, message.getContents());
-        preparedInsertStatement.setString(++property, message.getClientName());
-        preparedInsertStatement.setString(++property, message.getSeverity());
-        preparedInsertStatement.setString(++property, message.getClientHost());
-        preparedInsertStatement.setString(++property, message.getApplicationId());
-        
-        // Repeat count
-        preparedInsertStatement.setInt(++property, 1);
-
-        // Add message to Db
-        preparedInsertStatement.executeUpdate();
-        
-        // Read auto-assigned unique message ID
-        final ResultSet result = preparedInsertStatement.getGeneratedKeys();
-        int newId;
-        
-        if (result.next())
-        {
-        	newId = result.getInt(1);
+        	if(preparedInsertStatement != null) {
+        		preparedInsertStatement.close();
+        	}
         }
-        else
-        {
-            throw new Exception("Cannot obtain next message ID");
-        }
-        
-        // Commit the result
-        rdbConnection.commit();
-        
-        // Close connections
-        result.close();
-        preparedInsertStatement.close();
 
         return newId;
     }

@@ -41,7 +41,7 @@ public class JmsHandler implements Runnable
 	
 
 	/** Server name, <code>null</code> if not connected */
-	private String jms_server = null;
+	private String jmsServer = null;
 
 	/** 'run' flag to thread */
 	private volatile boolean run = true;
@@ -54,7 +54,7 @@ public class JmsHandler implements Runnable
 
 	private boolean connectedToJms;
 
-	private MessageProducer client_producer;
+	private MessageProducer clientProducer;
 
 	private Queue<LogMessage> messageBuffer;
 	private int MAX_BUFFER_SIZE = 10000;
@@ -67,8 +67,15 @@ public class JmsHandler implements Runnable
 		messageBuffer = new ArrayDeque<LogMessage>();
 	}
 
-	public synchronized boolean isConnected() {
-		return jms_server != null && connectedToJms;
+	public boolean isConnected() 
+	{
+		boolean jmsOk;
+		synchronized (this) 
+		{
+			jmsOk = jmsServer != null;
+		}
+		
+		return jmsOk && connectedToJms;
 	}
 
 	/**
@@ -88,7 +95,7 @@ public class JmsHandler implements Runnable
 	 * Create JMS producers and consumers. To be implemented by derived classes.
 	 */
 	protected void createProducer() throws Exception {
-		client_producer = createProducer(topic);
+		clientProducer = createProducer(topic);
 	}
 
 	/**
@@ -96,7 +103,9 @@ public class JmsHandler implements Runnable
 	 * by derived classes.
 	 */
 	protected void closeProducer() throws Exception {
-		client_producer.close();
+		if(clientProducer != null) {
+			clientProducer.close();
+		}
 	}
 
 	public void addToDispatchQueue(LogMessage msg) 
@@ -115,9 +124,11 @@ public class JmsHandler implements Runnable
 	 */
 	protected void addMessageToBuffer(LogMessage msg) 
 	{
-		synchronized (messageBuffer) {
-			// If the maximum size of the buffer has been exceeded, add
-			if (messageBuffer.size() > MAX_BUFFER_SIZE) {
+		synchronized (messageBuffer) 
+		{
+			// If the maximum size of the buffer has been exceeded, remove oldest message
+			if (messageBuffer.size() > MAX_BUFFER_SIZE)
+			{
 				messageBuffer.poll();
 			}
 
@@ -129,7 +140,7 @@ public class JmsHandler implements Runnable
 	{
 		synchronized (messageBuffer) 
 		{
-			if (client_producer != null) 
+			if (clientProducer != null) 
 			{
 				while (messageBuffer.size() > 0) 
 				{
@@ -138,9 +149,9 @@ public class JmsHandler implements Runnable
 						LogMessage message = messageBuffer.peek();
 						
 						String messageContent = message.getContents();
-						String xmlMessage = XmlWriter.MessageToXmlString(message);
+						String xmlMessage = XmlWriter.messageToXmlString(message);
 						
-						client_producer.send(session.createTextMessage(xmlMessage));
+						clientProducer.send(session.createTextMessage(xmlMessage));
 
 						// remove the message from the queue if successfully sent
 						messageBuffer.remove();
@@ -176,7 +187,7 @@ public class JmsHandler implements Runnable
 					synchronized (this) 
 					{
 						// Use URL as server name.
-						jms_server = url;
+						jmsServer = url;
 					}
 
 					// Give JMS clients a few seconds to potentially reconnect
@@ -202,7 +213,7 @@ public class JmsHandler implements Runnable
 		disconnect();
 
 		synchronized (this) {
-			jms_server = null;
+			jmsServer = null;
 		}
 	}
 
@@ -220,14 +231,14 @@ public class JmsHandler implements Runnable
 					@Override
 					public void linkUp(final String server) {
 						synchronized (this) {
-							jms_server = server;
+							jmsServer = server;
 						}
 					}
 
 					@Override
 					public void linkDown() {
 						synchronized (this) {
-							jms_server = null;
+							jmsServer = null;
 						}
 					}
 		});

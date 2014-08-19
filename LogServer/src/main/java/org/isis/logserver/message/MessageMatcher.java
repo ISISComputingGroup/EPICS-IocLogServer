@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -58,19 +59,18 @@ public class MessageMatcher {
 		     while ((strLine = br.readLine()) != null)
 		     {
 		         strLine = strLine.trim();
-	             //skip empty lines:
-		         if (strLine.length() <= 0)
+		         
+	             //skip empty lines and comments:
+		         if (strLine.length() <= 0 || strLine.startsWith("#")) {
 		             continue;
-		    	 //skip comments:
-		    	 if(strLine.startsWith("#"))
-		    	     continue;
-		       //System.out.println ("Suppression pattern: " + strLine);
+		         }
+
 		       addExpression(strLine);
 		     }
 		     
 		     System.out.println ("Suppression patterns loaded from file: '" + filename + "'");
 		}
-		catch (Exception ex)
+		catch (IOException ex)
 		{
 			System.out.println("Error reading suppressions file; using defaults.");
 			setDefaultSuppressions();

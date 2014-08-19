@@ -11,6 +11,7 @@
 package org.isis.logserver.server;
 
 import java.util.Date;
+import java.util.List;
 
 import org.isis.logserver.jms.JmsHandler;
 import org.isis.logserver.message.MessageMatcher;
@@ -45,24 +46,7 @@ public class IOCLogServer
 
     /** Listen for incoming connections and handle them */
     public static void main(String[] args)
-    {
-        // Parse command line arguments
-        String suppressions = SUPPRESSIONS;
-        if (args.length>1)
-        {
-        	for (int i=1; i<args.length; i++)
-        	{
-        		if(args[i-1].equals("-port"))
-        		{
-        			//port = Integer.parseInt(args[i]);
-        		}
-        		else if(args[i-1].equals("-suppressions"))
-        		{
-        			suppressions = args[i];
-        		}
-        	}
-        }
-        
+    {       
         // Welcome message
         System.out.println( "Starting IOC Log Server - " + new Date());
         
@@ -102,7 +86,7 @@ public class IOCLogServer
 		MessageMatcher matcher = null;
 		try 
 		{
-			matcher = new MessageMatcher(suppressions);
+			matcher = new MessageMatcher(SUPPRESSIONS);
 		} 
 		catch (Exception e) 
 		{
@@ -110,10 +94,10 @@ public class IOCLogServer
 		}
 		
 		// Start a port listener in a new thread for each port
-		Integer[] ports = config.getListenPorts();
-		for(int i=0; i<ports.length; ++i)
+		List<Integer> ports = config.getListenPorts();
+		for(int i=0; i<ports.size(); ++i)
 		{
-			PortListener portListener = new PortListener(ports[i], matcher, jmsHandler, rdbHandler);
+			PortListener portListener = new PortListener(ports.get(i), matcher, jmsHandler, rdbHandler);
 			portListener.start();
 		}
 		

@@ -14,10 +14,10 @@ package org.isis.logserver.jms;
 public interface JMSConnectionListener
 {
     /** Invoked when the connection to the JMS server is interrupted */
-    public void linkDown();
+    void linkDown();
 
     /** Invoked when the connection to the JMS server is re-connected (resumed)
      *  @param server Name of the JMS server to which we are connected.
      */
-    public void linkUp(String server);
+    void linkUp(String server);
 }

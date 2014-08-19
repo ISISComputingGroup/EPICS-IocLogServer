@@ -40,14 +40,14 @@ public class ClientHandler implements Runnable
     /** Only update 'repeat' info for every ... repeats */
     //private static final int REPEAT_THRESHOLD = 10;
 
-    /** Application ID used when invoked from standalone log server */
+    /** Application ID used when invoked from stand-alone log server */
     private static final String STANDALONE_LOG_SERVER = "IOCLogServer";
 
-    final private Socket client_socket;
-    private String client_host="";
-    final private String application_id;
+    final private Socket clientSocket;
+    private String clientHost="";
+    final private String applicationId;
     
-    private MessageMatcher matcher =null;
+    private MessageMatcher matcher = null;
     
     /** Handles connection to JMS server */
     private JmsHandler jmsHandler = null;
@@ -70,15 +70,15 @@ public class ClientHandler implements Runnable
     		final JmsHandler jmsHandler, final RdbHandler rdbHandler, ClientMessageParser messageParser)
     {
     	this.matcher=matcher;
-        this.client_socket = client_socket;
-        this.client_host = client_socket.getInetAddress().getHostName();
+        this.clientSocket = client_socket;
+        this.clientHost = client_socket.getInetAddress().getHostName();
         this.jmsHandler = jmsHandler;
         this.rdbHandler = rdbHandler;
         
         this.messageParser = messageParser;
 
-        this.application_id = STANDALONE_LOG_SERVER;
-        System.out.println("IOC Client " + client_host + ":" + client_socket.getPort() + " connected");
+        this.applicationId = STANDALONE_LOG_SERVER;
+        System.out.println("IOC Client " + clientHost + ":" + client_socket.getPort() + " connected");
         
         xmlParser = new XmlMessageParser();
     }
@@ -86,7 +86,7 @@ public class ClientHandler implements Runnable
     /** Thread runnable */
     public void run ()
     {	
-        try(InputStream inputStream = client_socket.getInputStream();
+        try(InputStream inputStream = clientSocket.getInputStream();
         		InputStreamReader isReader = new InputStreamReader(inputStream);
         		BufferedReader rdr = new BufferedReader(isReader))
         {
@@ -123,7 +123,7 @@ public class ClientHandler implements Runnable
                 
             	final boolean suppressible = matcher.check(message);
             	
-            	System.out.println("Message received from "+ client_host + ":" + client_socket.getPort() + " - " +  message);
+            	System.out.println("Message received from "+ clientHost + ":" + clientSocket.getPort() + " - " +  message);
             	
             	if (suppressible==false) 
             	{
@@ -131,7 +131,7 @@ public class ClientHandler implements Runnable
             	}
             	else
             	{
-            	    System.out.println(new Date() + "  Suppressed: " + client_host + " message '" + message + "'");
+            	    System.out.println(new Date() + "  Suppressed: " + clientHost + " message '" + message + "'");
             	}
             	
             	message = "";
@@ -139,7 +139,7 @@ public class ClientHandler implements Runnable
         }
         catch (Exception e)
         {
-        	System.out.println("Lost connection with client at "+ client_host + ":" + client_socket.getPort());
+        	System.out.println("Lost connection with client at "+ clientHost + ":" + clientSocket.getPort());
         }
     }
 
@@ -167,6 +167,8 @@ public class ClientHandler implements Runnable
     	// if message wasn't XML formatted or XML parsing failed
     	if(clientMessage == null) 
     	{
+    		clientMessage = new LogMessage();
+    		
     		// use the supplied parser or just treat the raw text as the message contents
     		if(messageParser != null) 
     		{
@@ -174,7 +176,6 @@ public class ClientHandler implements Runnable
     		} 
     		else 
     		{
-    			clientMessage = new LogMessage();
     			clientMessage.setContents(messageStr);
     		}
     	}
@@ -203,8 +204,8 @@ public class ClientHandler implements Runnable
 		}
 		
     	
-    	clientMessage.setClientHost(client_host);
-    	clientMessage.setApplicationId(application_id);
+    	clientMessage.setClientHost(clientHost);
+    	clientMessage.setApplicationId(applicationId);
     	clientMessage.setCreateTime(timeReceived);
     	clientMessage.setRawMessage(messageStr);
     	
@@ -212,7 +213,7 @@ public class ClientHandler implements Runnable
 
 		synchronized (filter)
         {
-			final MessageState info = filter.checkMessageState(client_host, clientMessage.getRawMessage());
+			final MessageState info = filter.checkMessageState(clientHost, clientMessage.getRawMessage());
 			
 			// SEND MESSAGE BY JMS
 			if(info.isNewMessage())

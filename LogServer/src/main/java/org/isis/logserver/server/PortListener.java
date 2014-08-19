@@ -97,6 +97,10 @@ public class PortListener extends Thread
             	ex.printStackTrace();
             }
         }
-
+	}
+	
+	public void exit()
+	{
+		active = false;
 	}
 }

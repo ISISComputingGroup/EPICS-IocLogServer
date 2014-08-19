@@ -42,6 +42,7 @@ public class RdbHandler implements Runnable
 	public RdbHandler(Config config)
 	{
 		this.config = config;
+		this.rdb = null;
 		messageBuffer = new ArrayDeque<LogMessage>();		
 	}
 
@@ -110,7 +111,9 @@ public class RdbHandler implements Runnable
 				{
 					try {
 						Thread.sleep(9000);
-					} catch (Exception e) { ; }
+					} catch (InterruptedException ex) { 
+						System.out.println("Sleep interrupted: " + ex.getMessage());
+					}
 				}
 			}
 			
@@ -119,13 +122,17 @@ public class RdbHandler implements Runnable
 	        {
 				Thread.sleep(1000);
 			} 
-	        catch (InterruptedException e) { ; }
+	        catch (InterruptedException ex) { 
+				System.out.println("Sleep interrupted: " + ex.getMessage());
+			}
 		}
 	}
 	
 	public void close()
 	{
-		rdb.close();
+		if(rdb != null) {
+			rdb.close();
+		}
 	}
 		
 	public void saveMessageToDb(LogMessage message)
@@ -134,7 +141,7 @@ public class RdbHandler implements Runnable
 		{
 			synchronized(messageBuffer)
 			{
-				// If the maximum size of the buffer has been exceeded, add
+				// If the maximum size of the buffer has been exceeded, discard the oldest message
 				if(messageBuffer.size() > MAX_BUFFER_SIZE)
 				{
 					messageBuffer.poll();
@@ -151,16 +158,16 @@ public class RdbHandler implements Runnable
 		{
 			while(messageBuffer.size() > 0)
 			{
-				try
+				LogMessage message = messageBuffer.peek();				
+				boolean saveOk = saveLogMessageToDb(message);
+				
+				// remove the message from the queue if successfully sent
+				if(saveOk) 
 				{
-					LogMessage message = messageBuffer.peek();				
-					saveLogMessageToDb(message);
-					
-					// remove the message from the queue if successfully sent
 					messageBuffer.remove();
 					System.out.println("Saved message to DB: " + message.getContents());
-				}
-				catch(Exception ex)
+				} 
+				else 
 				{
 					break;
 				}
@@ -169,8 +176,12 @@ public class RdbHandler implements Runnable
 	}
 	
 	
-	protected void saveLogMessageToDb(LogMessage message) throws Exception
+	protected boolean saveLogMessageToDb(LogMessage message)
     {
+		if(rdb == null) {
+			return false;
+		}
+			
         try
         {
         	MessageFilter filter = MessageFilter.getInstance();
@@ -184,11 +195,12 @@ public class RdbHandler implements Runnable
         		info.setMessageID(msg_id);
         	}
         	
+        	return true;
         }
-        catch(Exception ex)
+        catch(SQLException ex)
         {
-        	System.out.println("Could not connect to Database. Message not saved: " + message.getContents());
-        	ex.printStackTrace();
+        	System.out.println("Could not connect to Database, error: " + ex.getMessage() + " Will retry.");
+        	return false;
         }
     }
 }
