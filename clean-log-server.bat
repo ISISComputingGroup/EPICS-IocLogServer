@@ -4,7 +4,10 @@ set MYDIRBLOCK=%~dp0
 
 cd %MYDIRBLOCK%\LogServer
 
-mvn clean
+mvn --settings=%MYDIRBLOCK%mvn_user_settings.xml clean
+set builderr=%errorlevel% 
 
 REM return to previous working directory
 cd %CURRWORKINGDIR%
+
+if %builderr% neq 0 exit /b %builderr% 
