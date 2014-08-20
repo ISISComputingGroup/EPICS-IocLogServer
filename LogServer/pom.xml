@@ -141,9 +141,33 @@
 	          <targetJdk>1.7</targetJdk>
 	        </configuration>
 		</plugin>
+		
+		<!--
+        	Run CheckStyle checks as part of the build.  
+        -->
+        <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-checkstyle-plugin</artifactId>
+	      <version>2.12.1</version>
+	      <executions>
+            <execution>
+              <phase>verify</phase> 
+                <goals>
+              	  <goal>check</goal> 
+                </goals>
+          	</execution>
+          </executions>
+          <configuration>
+            <failOnViolation>false</failOnViolation>
+            <failsOnError>false</failsOnError>
+          	<linkXRef>true</linkXRef>
+          </configuration>
+      	</plugin>
 	  
     </plugins>
   </build>
+  
+  
 
   <dependencies>
     <dependency>
