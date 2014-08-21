@@ -158,6 +158,7 @@
           	</execution>
           </executions>
           <configuration>
+            <configLocation>src/main/config/checkstyle.xml</configLocation>
             <failOnViolation>false</failOnViolation>
             <failsOnError>false</failsOnError>
           	<linkXRef>true</linkXRef>
