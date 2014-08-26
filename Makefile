@@ -1,13 +1,13 @@
 #Makefile at top of application tree
-TOP = .
-ACTIONS += uninstall
+TOP = ../../extensions
+include $(TOP)/configure/CONFIG
 
-.PHONY: install uninstall clean
+include $(TOP)/configure/RULES_TOP
 
 install:
-	$(TOP)\build-log-server.bat
+	build-log-server.bat
 
 clean:
-	$(TOP)\clean-log-server.bat
+	clean-log-server.bat
 
-uninstall: clean
+uninstall:
