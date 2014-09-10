@@ -1,0 +1,11 @@
+The Ioc log server needs a running instance of MySQl - see CSS/ArchiveEngine/setup_mysql_database.txt to install MySQl if
+it is not already done this
+
+Once mysql is started, you need to load log_mysql_schema.txt from this directory
+
+from a command prompt run:
+
+    mysql -u root -p < log_mysql_schema.txt
+
+and when prompted for a password give the MySQl admin password you previous set
+
