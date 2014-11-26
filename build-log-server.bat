@@ -4,7 +4,7 @@ set MYDIRBLOCK=%~dp0
 
 cd %MYDIRBLOCK%\LogServer
 
-mvn --settings=%MYDIRBLOCK%mvn_user_settings.xml clean package assembly:single
+mvn --settings=%MYDIRBLOCK%mvn_user_settings.xml clean verify
 set builderr=%errorlevel% 
 
 REM return to previous working directory
