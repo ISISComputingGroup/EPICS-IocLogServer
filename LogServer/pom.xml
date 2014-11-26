@@ -32,7 +32,9 @@
       		Build with the command 'mvn package assembly:single'.
        -->
 	  <plugin>
+  		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-assembly-plugin</artifactId>
+		<version>2.3</version>
 		<configuration>
 		  <archive>
 			<manifest>
@@ -42,8 +44,7 @@
 		  <descriptorRefs>
 			<descriptorRef>jar-with-dependencies</descriptorRef>
 		  </descriptorRefs>
-		  <appendAssemblyId>false</appendAssemblyId>
-		  <attach>false</attach>
+		  <appendAssemblyId>false</appendAssemblyId >
 		</configuration>
 	  </plugin>
 	  
@@ -172,8 +173,6 @@
     </plugins>
   </build>
   
-  
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
