@@ -20,7 +20,7 @@ The log server also saves all messages to a relational database (SQL). Messages 
 
 It is likely that the Log server, JMS server, and Database server will all live on the same physical machine.
 
-.. figure:: img\Logserver\iocLogArchitecture.png
+.. figure:: img/logserver/iocLogArchitecture.png
     :width: 100%
     :align: center
     :alt: Architecture of the IOC Log Message System
@@ -127,7 +127,7 @@ Clients of the model (i.e., the view) may subscribe, receiving any new log messa
 
 The model plugin also provides an Eclipse preference page with a class that implements ``IWorkbenchPreferencePage``. This page allows the user to configure settings that control the connection to the JMS server and to the database server. These settings are saved to disk so are persistent between uses of the Eclipse client. Changes to these settings take effect immediately.
 
-.. figure:: img\Logserver\LogPreferences.png
+.. figure:: img/logserver/LogPreferences.png
     :width: 100%
     :align: center
     :alt: The IOC Log message system preference screen in the Eclipse client
@@ -136,7 +136,7 @@ The model plugin also provides an Eclipse preference page with a class that impl
 ^^^^^^^^^^^
 View Plugin
 ^^^^^^^^^^^
-.. figure:: img\Logserver\logViewer.png
+.. figure:: img/logserver/logViewer.png
     :width: 100%
     :align: center
     :alt: The IOC Log message system preference screen in the Eclipse client
