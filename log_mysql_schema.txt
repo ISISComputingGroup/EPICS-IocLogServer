@@ -15,6 +15,10 @@ FLUSH PRIVILEGES;
 -- Create 'msg_report' user who can read data
 GRANT SELECT ON msg_log.* TO msg_report@localhost IDENTIFIED BY '$msg_report';
 GRANT SELECT ON msg_log.* TO msg_report@'%' IDENTIFIED BY '$msg_report';
+-- Default EPICS report user --
+GRANT SELECT ON msg_log.* TO report@localhost IDENTIFIED BY '$report';
+GRANT SELECT ON msg_log.* TO report@'%' IDENTIFIED BY '$report';
+
 FLUSH PRIVILEGES;
 
 DROP TABLE IF EXISTS message;
