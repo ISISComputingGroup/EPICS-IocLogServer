@@ -36,3 +36,6 @@ CREATE TABLE message
   repeatCount INT NULL DEFAULT 1,
   PRIMARY KEY (id)
 );
+
+CREATE INDEX message_severity_index ON message(severity);
+CREATE INDEX message_type_index ON message(type);
