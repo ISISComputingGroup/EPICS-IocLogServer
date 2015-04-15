@@ -165,7 +165,10 @@ public class RdbHandler implements Runnable
 				if(saveOk) 
 				{
 					messageBuffer.remove();
-					System.out.println("Saved message to DB: " + message.getContents());
+                    if (Config.verbose)
+                    {
+					    System.out.println("Saved message to DB: " + message.getContents());
+                    }
 				} 
 				else 
 				{

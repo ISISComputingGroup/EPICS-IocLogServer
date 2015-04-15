@@ -33,6 +33,8 @@ public class Config
 {
 	private static final String KV_DELIMIT = ":";
 
+	public static final boolean verbose = false;
+    
 	// Default values for each configuration setting
 	private static final String DEFAULT_jmsServerAddress = "tcp://localhost";
 	private static final String DEFAULT_jmsServerPort = "61616";

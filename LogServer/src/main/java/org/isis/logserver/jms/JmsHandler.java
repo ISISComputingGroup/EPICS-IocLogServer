@@ -25,6 +25,8 @@ import org.isis.logserver.message.LogMessage;
 import org.isis.logserver.server.Config;
 import org.isis.logserver.xml.XmlWriter;
 
+import org.isis.logserver.server.Config;
+
 /**
  * Handles the connection to a Java Message Service (JMS) Server.
  * 	Automatically attempts to reestablish connection if it is dropped
@@ -155,7 +157,10 @@ public class JmsHandler implements Runnable
 
 						// remove the message from the queue if successfully sent
 						messageBuffer.remove();
-						System.out.println("Sent JMS message: " + messageContent);
+                        if (Config.verbose)
+                        {
+						    System.out.println("Sent JMS message: " + messageContent);
+                        }
 					} 
 					catch (JMSException ex) {
 						break;

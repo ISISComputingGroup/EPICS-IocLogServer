@@ -26,6 +26,8 @@ import org.isis.logserver.parser.ClientMessageParser;
 import org.isis.logserver.parser.XmlMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
 
+import org.isis.logserver.server.Config;
+
 /**
  * Handles the connection to a single client. Listens for new messages from the client,
  * 	processes the messages and sends them to be dispatched to listeners via JMS, and
@@ -122,9 +124,11 @@ public class ClientHandler implements Runnable
         		}
                 
             	final boolean suppressible = matcher.check(message);
-            	
-            	System.out.println("Message received from "+ clientHost + ":" + clientSocket.getPort() + " - " +  message);
-            	
+                if (Config.verbose)
+                {
+            	    System.out.println("Message received from "+ clientHost + ":" + clientSocket.getPort() + " - " +  message);
+            	}
+                
             	if (suppressible==false) 
             	{
             		logMessage(message, calendar);
