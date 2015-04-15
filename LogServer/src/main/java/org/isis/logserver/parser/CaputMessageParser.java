@@ -10,13 +10,20 @@
  */
 package org.isis.logserver.parser;
 
+import java.util.Calendar;
+import java.util.Locale;
 import org.isis.logserver.message.LogMessage;
+import org.isis.logserver.message.LogMessageFields;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormat;
 
 public class CaputMessageParser implements ClientMessageParser 
 {
     /** Default severity */
     static final String SEVERITY_INFO = "INFO";
-
+    static int fake_millisecs = 0;
+    static int last_secs = -1;
 	@Override
 	public LogMessage parse(String text, LogMessage msg) 
 	{
@@ -40,10 +47,31 @@ public class CaputMessageParser implements ClientMessageParser
 			}
 			// if a client name has not already been set, use PC_name:user_name
 			String clientName = message.getClientName();
-			if(clientName == null || clientName.trim().equals("")) {
+			if(clientName == null || clientName.trim().equals("")) 
+            {
 				message.setClientName(parts[2] + ":" + parts[3]);
 			}
-		}
+            try
+            {
+                DateTimeFormatter timeParser = DateTimeFormat.forPattern("dd-MMM-YY HH:mm:ss");
+                String time_value = parts[0] + " " + parts[1];
+			    DateTime dateTime = timeParser.parseDateTime(time_value);
+                // add a made up milliseconds to preserve order
+                int secs = dateTime.getSecondOfMinute();
+                ++fake_millisecs;
+                if (fake_millisecs > 900)
+                {
+                    fake_millisecs = 0;
+                }
+                Calendar time = dateTime.plusMillis(fake_millisecs).toCalendar(Locale.UK);
+			    message.setProperty(LogMessageFields.EVENT_TIME, time);
+                last_secs = secs;
+            }
+			catch(Exception ex)
+			{
+				System.out.println("Exception " + ex.toString());
+			} 
+        }
 		else
 		{
 			message.setContents(text);
@@ -51,7 +79,6 @@ public class CaputMessageParser implements ClientMessageParser
 		
 		message.setSeverity(SEVERITY_INFO);
 		message.setType("caput");
-		
 		
 		return message;
 	}
