@@ -33,18 +33,18 @@ public class CaputMessageParser implements ClientMessageParser
 		// caput message Format: 
 		//		(0)Date, (1)Time, (2)PC_name, (3)user_name, (4)PV_name, (5)new=new_value, (6)old=old_value  
 		//		(0)Date, (1)Time, (2)PC_name, (3)user_name, (4)PV_name, (5)new=new_value, (6)old=old_value, (7)min=min_value, (8)max=max_value
-		String[] parts = text.split(" ");
+
+		String[] parts = text.split("[\\s]+");  // this will remove embedded whitespace/newlines
 		
-		if (parts.length >= 7)
+		if (parts.length >= 5)
 		{
-            if (parts.length == 9)
+            String mess = "";
+            for(int i=4; i< parts.length; ++i)
             {
-			    message.setContents("Changed PV: '" + parts[4] + "' from '" + parts[6] + "' to '" + parts[5] + "' min='" + parts[7] + "' max='" + parts[8] + "'" );
-            }
-            else
-            {
-			    message.setContents("Changed PV: '" + parts[4] + "' from '" + parts[6] + "' to '" + parts[5] + "'"  );
-			}
+                mess += parts[i];
+                mess += " ";
+            }   
+			message.setContents("Changed PV: " + mess);
 			// if a client name has not already been set, use PC_name:user_name
 			String clientName = message.getClientName();
 			if(clientName == null || clientName.trim().equals("")) 
