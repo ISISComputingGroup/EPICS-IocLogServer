@@ -41,7 +41,7 @@ public class MessageMatcher {
 	public MessageMatcher(final String filename) throws Exception
 	{
 		File f = new File(filename);
-		
+		System.out.println("Changing this here will propagate through");
 		if(!f.exists()) 
 		{ 
 			System.out.println("The specified file: '" + filename + "' does not exist. Creating default suppressions file.");
@@ -67,7 +67,7 @@ public class MessageMatcher {
 
 		       addExpression(strLine);
 		     }
-		     
+
 		     System.out.println ("Suppression patterns loaded from file: '" + filename + "'");
 		}
 		catch (IOException ex)

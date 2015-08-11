@@ -21,21 +21,97 @@ GRANT SELECT ON msg_log.* TO report@'%' IDENTIFIED BY '$report';
 
 FLUSH PRIVILEGES;
 
+# id has fixed values - see inserts below
+DROP TABLE IF EXISTS message_type;
+CREATE TABLE message_type
+(
+    id INT NOT NULL,
+    type VARCHAR(32) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE(type)
+);
+
+# id has fixed values - see inserts below
+DROP TABLE IF EXISTS message_severity;
+CREATE TABLE message_severity
+(
+    id INT NOT NULL,
+    severity VARCHAR(16) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE(severity)
+);
+
+# usually IOC name
+DROP TABLE IF EXISTS client_name;
+CREATE TABLE client_name
+(
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(64) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE(name)
+);
+
+DROP TABLE IF EXISTS client_host;
+CREATE TABLE client_host
+(
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(64) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE(name)
+);
+
+# name of application writing to database 
+DROP TABLE IF EXISTS application;
+CREATE TABLE application
+(
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(64) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE(name)
+);
+
 DROP TABLE IF EXISTS message;
 CREATE TABLE message 
 (
   id INT NOT NULL AUTO_INCREMENT,
   createTime TIMESTAMP(3) NULL,
   eventTime TIMESTAMP(3) NULL,
-  type VARCHAR(45) NULL,
+  type_id INT NOT NULL,     # from message_type table 
   contents TEXT NULL,
-  clientName TEXT NULL,
-  severity VARCHAR(45) NULL,
-  clientHost TEXT NULL,
-  applicationId TEXT NULL,
+  clientName_id INT NULL,   # from client_name table 
+  severity_id INT NOT NULL, # from message_severity table
+  clientHost_id INT NULL,   # from client_host table 
+  application_id INT NULL,  # from application table 
   repeatCount INT NULL DEFAULT 1,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY(type_id) REFERENCES message_type(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY(severity_id) REFERENCES message_severity(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY(clientName_id) REFERENCES client_name(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY(clientHost_id) REFERENCES client_host(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY(application_id) REFERENCES application(id) ON DELETE CASCADE ON UPDATE CASCADE  
 );
 
-CREATE INDEX message_severity_index ON message(severity);
-CREATE INDEX message_type_index ON message(type);
+CREATE INDEX message_type_index ON message(type_id);
+CREATE INDEX message_severity_index ON message(severity_id);
+CREATE INDEX message_app_index ON message(application_id);
+CREATE INDEX message_cn_index ON message(clientName_id);
+CREATE INDEX message_ch_index ON message(clientHost_id);
+
+# ids are fixed and used directly in log client for speed
+INSERT INTO message_type VALUES (1, 'caput');
+INSERT INTO message_type VALUES (2, 'ioclog');
+INSERT INTO message_type VALUES (3, 'SIM_MSG');
+
+# ids are fixed and used directly in log client for speed
+INSERT INTO message_severity VALUES (1, 'INFO');
+INSERT INTO message_severity VALUES (2, 'MINOR');
+INSERT INTO message_severity VALUES (3, 'MAJOR');
+INSERT INTO message_severity VALUES (4, 'FATAL');
+
+# add some special fixed IDs that can be used for speed when writing
+# other can be added by client inserts as needed
+INSERT INTO application VALUES (1, 'IOCLogServer');
+
+# add some special fixed IDs that can be used for speed when writing
+# other can be added by client inserts as needed
+INSERT INTO client_host VALUES (1, '127.0.0.1');
