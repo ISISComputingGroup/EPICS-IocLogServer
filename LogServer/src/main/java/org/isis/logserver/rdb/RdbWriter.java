@@ -43,55 +43,20 @@ public class RdbWriter
 		
         try
         {        	
-            preparedInsertStatement = rdbConnection.prepareStatement(Sql.OLD_INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS);
-            
+            PreparedStatement test = rdbConnection.prepareStatement(Sql.INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS);
 	        int property = 0;
 	
+			// Get the property values
 	        Timestamp eventTime = new Timestamp(message.getEventTime().getTimeInMillis());
 	        Timestamp createTime = new Timestamp(message.getCreateTime().getTimeInMillis());
 	
-	        preparedInsertStatement.setTimestamp(++property, eventTime);
-	        preparedInsertStatement.setTimestamp(++property, createTime);
-	        	
-	        preparedInsertStatement.setString(++property, message.getType());
-	        preparedInsertStatement.setString(++property, message.getContents());
-	        preparedInsertStatement.setString(++property, message.getClientName());
-	        preparedInsertStatement.setString(++property, message.getSeverity());
-	        preparedInsertStatement.setString(++property, message.getClientHost());
-	        preparedInsertStatement.setString(++property, message.getApplicationId());
-	        
-	        // Repeat count
-	        preparedInsertStatement.setInt(++property, 1);
-	
-	        // Add message to Db
-	        preparedInsertStatement.executeUpdate();
-	        
-	        // Read auto-assigned unique message ID
-	        result = preparedInsertStatement.getGeneratedKeys();
-	        
-	        if (result.next())
-	        {
-	        	newId = result.getInt(1);
-	        }
-	        else
-	        {
-	            throw new SQLException("Cannot obtain next message ID");
-	        }
-	        
-	        // Commit the result
-	        rdbConnection.commit();
-	        
-	        // Test for writing to the new schema too - use that ID
-	        
-	        String messageType = message_type_id(message.getType());
+			String messageType = message_type_id(message.getType());
 	        String messageSeverity = severity_id(message.getSeverity());
 	        String clientName = client_name(message.getClientName());
 	        String clientHost = client_host(message.getClientHost());
 	        String application = application(message.getApplicationId());
-	        
-	        PreparedStatement test = rdbConnection.prepareStatement(Sql.INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS);
-	        property = 0;
 	
+			// Set the property values for the SQL statement
 	        test.setTimestamp(++property, eventTime);
 	        test.setTimestamp(++property, createTime);
 	        	
