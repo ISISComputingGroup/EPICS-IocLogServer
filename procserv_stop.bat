@@ -9,7 +9,7 @@ if "%CSPID%" == "" (
     @echo JMS server is not running
 ) else (
     @echo Killing JMS server PID %CSPID%
-    %MYDIR%..\..\tools\cygwin_bin\cygwin_kill.exe %CSPID%
+    %ICPTOOLS%\cygwin_bin\cygwin_kill.exe %CSPID%
     del c:\windows\temp\EPICS_JMS.pid
 )
 
@@ -19,7 +19,7 @@ if "%CSPID%" == "" (
     @echo IOC Log server is not running
 ) else (
     @echo Killing IOC Log server PID %CSPID%
-    %MYDIR%..\..\tools\cygwin_bin\cygwin_kill.exe %CSPID%
+    %ICPTOOLS%\cygwin_bin\cygwin_kill.exe %CSPID%
     del c:\windows\temp\EPICS_IOCLOG.pid
 )
 

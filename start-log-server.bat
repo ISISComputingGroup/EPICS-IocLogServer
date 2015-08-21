@@ -2,7 +2,7 @@
 set LOGDIRBLOCK=%~dp0
 set CURRWORKINGDIR=%cd%
 
-call %LOGDIRBLOCK%..\..\config_env_base.bat
+call %LOGDIRBLOCK%..\..\..\config_env_base.bat
 
 %HIDEWINDOW% h
 

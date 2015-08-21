@@ -8,6 +8,7 @@ include $(TOP)/configure/RULES_TOP
 install:
 	clean-log-server.bat
 	build-log-server.bat
+	verify-log-server.bat
 
 clean:
 	clean-log-server.bat
