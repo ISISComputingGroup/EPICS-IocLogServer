@@ -1,24 +1,22 @@
 #!/bin/bash
 
-SCRIPT=$(readlink -f ${BASH_SOURCE[0]})
-SCRIPTPATH=`dirname "$SCRIPT"`
-MYDIRBLOCK=$SCRIPTPATH
-CURRWORKINGDIR=`pwd`
+SCRIPTDIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+WORKINGDIR="`pwd`"
 
 # Ensure environment is set up
 if [ -z "$EPICS_ROOT" ]; then
-    . $MYDIRBLOCK/../../../config_env_base.sh
+    . "$SCRIPTDIR/../../../config_env_base.sh"
 fi
 
-cd "$MYDIRBLOCK/LogServer"
+cd "$SCRIPTDIR/LogServer"
 
-mvn --settings="$MYDIRBLOCK/mvn_user_settings.xml" verify
+mvn --settings="$SCRIPTDIR/mvn_user_settings.xml" verify
 builderr=$?
 
 # return to previous working directory
-cd "$CURRWORKINGDIR"
+cd "$WORKINGDIR"
 
-if [ $builderr != 0 ]; then
+if [ $builderr -ne 0 ]; then
     exit $builderr
 fi
 
