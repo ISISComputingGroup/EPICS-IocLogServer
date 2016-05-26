@@ -202,7 +202,7 @@ public class RdbHandler implements Runnable
         }
         catch(SQLException ex)
         {
-        	System.out.println("Could not connect to Database, error: " + ex.getMessage() + " Will retry.");
+            System.out.println("Database error, error: '" + ex.getMessage() + "' Will retry.");
         	return false;
         }
     }

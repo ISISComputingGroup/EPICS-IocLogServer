@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="lib" path="lib/activemq-all-5.4.2.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.31-bin.jar"/>
+	<classpathentry kind="lib" path="lib/ojdbc7.jar"/>
+	<classpathentry kind="lib" path="target/archive-tmp/IocLogServer-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="target/IocLogServer-1.0-SNAPSHOT-javadoc.jar"/>
+	<classpathentry kind="lib" path="target/IocLogServer-1.0-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="target/IocLogServer-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/org.mockito_1.9.5.20150724-1352.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
