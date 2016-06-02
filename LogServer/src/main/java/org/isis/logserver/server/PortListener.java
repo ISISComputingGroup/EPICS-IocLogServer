@@ -53,50 +53,62 @@ public class PortListener extends Thread
 	@Override
 	public void run() 
 	{
-		// Listen on the port specified in the constructor. If port is busy, keep
-		//	keep retrying till its free
-		while(listener == null)
-		{
-			try
-			{
-				listener = new ServerSocket(port);
-				System.out.println("Listening for messages on port " + port);
-			}
-			catch(IOException ex)
-			{
-				System.out.println("Port: '" + port + "' is already in use by another process. Retrying in 2 seconds");
-				
-				// Wait a second before retrying the port if failed
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) { }
-			}
-		}
-		
-		// TODO: this shouldn't be hard-coded, move this selection elsewhere
-		ClientMessageParser parser = null;
-		if(port == 7011)
-		{
-			parser = new CaputMessageParser();
-		}
-		
-        while(active)
-        {
-            try
+	    try {	    
+    		// Listen on the port specified in the constructor. If port is busy, keep
+    		//	keep retrying till its free
+    		while(listener == null)
+    		{
+    			try
+    			{
+    				listener = new ServerSocket(port);
+    				System.out.println("Listening for messages on port " + port);
+    			}
+    			catch(IOException ex)
+    			{
+    				System.out.println("Port: '" + port + "' is already in use by another process. Retrying in 2 seconds");
+    				
+    				// Wait a second before retrying the port if failed
+    				try {
+    					Thread.sleep(2000);
+    				} catch (InterruptedException e) { }
+    			}
+    		}
+    		
+    		// TODO: this shouldn't be hard-coded, move this selection elsewhere
+    		ClientMessageParser parser = null;
+    		if(port == 7011)
+    		{
+    			parser = new CaputMessageParser();
+    		}
+    		
+            while(active)
             {
-                final Socket client_socket = listener.accept();
-                final ClientHandler client_handler 
-                	= new ClientHandler(client_socket, suppressions, jmsHandler, rdbHandler, parser);
-                
-                final Thread t = new Thread(client_handler);
-                t.start();
+                try
+                {
+                    final Socket client_socket = listener.accept();
+                    final ClientHandler client_handler 
+                    	= new ClientHandler(client_socket, suppressions, jmsHandler, rdbHandler, parser);
+                    
+                    final Thread t = new Thread(client_handler);
+                    t.start();
+                }
+                catch (IOException ex)
+                {
+                	System.out.println("Error listening on port " + port);
+                	ex.printStackTrace();
+                }
             }
-            catch (IOException ex)
-            {
-            	System.out.println("Error listening on port " + port);
-            	ex.printStackTrace();
+	    }
+	    finally {
+            if (listener != null) {
+                try {
+                    listener.close();
+                } catch (IOException ex) {
+                    System.out.println("Error on close on port " + port);
+                    ex.printStackTrace();
+                }
             }
-        }
+	    }
 	}
 	
 	public void exit()
