@@ -100,25 +100,25 @@ public class RdbWriter {
         return getIdForString(type, SELECT_MESSAGE_ID_SQL, "Message Type");
     }
 
-    protected static final String SELECT_SEVERITY_ID_SQL = "SELECT id FROM message_severity WHERE severity=?";
+    static final String SELECT_SEVERITY_ID_SQL = "SELECT id FROM message_severity WHERE severity=?";
     private String severityId(String severity) throws SQLException {
         return getIdForString(severity, SELECT_SEVERITY_ID_SQL, "Message Severity");
 
     }
 
-    protected static final String SELECT_CLIENT_NAME_ID_SQL = "SELECT id FROM client_name WHERE name=?";
-    protected static final String INSERT_CLIENT_NAME_SQL = "INSERT INTO client_name (name) VALUES (?)";
+    static final String SELECT_CLIENT_NAME_ID_SQL = "SELECT id FROM client_name WHERE name=?";
+    static final String INSERT_CLIENT_NAME_SQL = "INSERT INTO client_name (name) VALUES (?)";
     private String clientName(String name) throws SQLException {
         return getIdCreateIfNotFound(name, SELECT_CLIENT_NAME_ID_SQL, INSERT_CLIENT_NAME_SQL);
     }
 
-    protected static final String SELECT_CLIENT_HOST_ID_SQL = "SELECT id FROM client_host WHERE name=?";
+    static final String SELECT_CLIENT_HOST_ID_SQL = "SELECT id FROM client_host WHERE name=?";
     private static final String INSERT_CLIENT_HOST_SQL = "INSERT INTO client_host (name) VALUES (?)";
     private String clientHost(String name) throws SQLException {
         return getIdCreateIfNotFound(name, SELECT_CLIENT_HOST_ID_SQL, INSERT_CLIENT_HOST_SQL);
     }
 
-    protected static final String SELECT_APPLICATION_ID_SQL = "SELECT id FROM application WHERE name=?";
+    static final String SELECT_APPLICATION_ID_SQL = "SELECT id FROM application WHERE name=?";
     private static final String INSERT_APPLICATION_SQL = "INSERT INTO application (name) VALUES (?)";
     private String application(String name) throws SQLException {
         return getIdCreateIfNotFound(name, SELECT_APPLICATION_ID_SQL, INSERT_APPLICATION_SQL);
