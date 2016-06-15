@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2013-2014 Research Councils UK (STFC)
+ * Copyright (C) 2013-2016 Research Councils UK (STFC)
  *
  * This file is part of the Instrument Control Project at ISIS.
  *
- * This code and information are provided "as is" without warranty of any 
- * kind, either expressed or implied, including but not limited to the
- * implied warranties of merchantability and/or fitness for a particular 
- * purpose.
+ * This code and information are provided "as is" without warranty of any kind,
+ * either expressed or implied, including but not limited to the implied
+ * warranties of merchantability and/or fitness for a particular purpose.
  */
 package org.isis.logserver.rdb;
 
@@ -202,7 +201,7 @@ public class RdbHandler implements Runnable
         }
         catch(SQLException ex)
         {
-        	System.out.println("Could not connect to Database, error: " + ex.getMessage() + " Will retry.");
+            System.out.println("Database error, error: '" + ex.getMessage() + "' Will retry.");
         	return false;
         }
     }

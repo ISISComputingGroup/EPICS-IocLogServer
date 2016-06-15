@@ -43,14 +43,20 @@ if __name__ == '__main__':
     
     # connect to target
     sock = connect(host, port)
-    
+    	
     print "Enter message to send or type 'exit': "
     while True:
         try:
             data = raw_input("msg> ")
-            sock.send(MSG_START + data + MSG_END + "\n")
-            if data == "exit":
+            if data == "send many":
+                for i in range(1000):
+                    if i%100 == 0:
+                        print i
+                    sock.send(MSG_START + str(i) +  " auto gen message" + MSG_END + "\n")
+            elif data == "exit":
                 break    
+            else:
+            	sock.send(MSG_START + data + MSG_END + "\n")            
                 
         except Exception:
             print "Lost connection to IOC Log server. Attempting to reestablish"

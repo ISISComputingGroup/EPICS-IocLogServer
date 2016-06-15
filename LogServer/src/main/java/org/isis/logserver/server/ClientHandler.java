@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2013-2014 Research Councils UK (STFC)
+ * Copyright (C) 2013-2016 Research Councils UK (STFC)
  *
  * This file is part of the Instrument Control Project at ISIS.
  *
- * This code and information are provided "as is" without warranty of any 
- * kind, either expressed or implied, including but not limited to the
- * implied warranties of merchantability and/or fitness for a particular 
- * purpose.
+ * This code and information are provided "as is" without warranty of any kind,
+ * either expressed or implied, including but not limited to the implied
+ * warranties of merchantability and/or fitness for a particular purpose.
  */
 package org.isis.logserver.server;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
@@ -25,8 +25,6 @@ import org.isis.logserver.message.MessageState;
 import org.isis.logserver.parser.ClientMessageParser;
 import org.isis.logserver.parser.XmlMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
-
-import org.isis.logserver.server.Config;
 
 /**
  * Handles the connection to a single client. Listens for new messages from the client,
@@ -86,6 +84,7 @@ public class ClientHandler implements Runnable
     }
 
     /** Thread runnable */
+    @Override
     public void run ()
     {	
         try(InputStream inputStream = clientSocket.getInputStream();
@@ -144,6 +143,16 @@ public class ClientHandler implements Runnable
         catch (Exception e)
         {
         	System.out.println("Lost connection with client at "+ clientHost + ":" + clientSocket.getPort());
+        }
+        if (this.clientSocket != null) {
+            try {
+                this.clientSocket.close();
+                System.out.println("IOC Client " + clientHost + ":" + clientSocket.getPort() + " disconnected");
+            } catch (IOException e) {
+                System.out.println(
+                        "Excption on close socket with client at " + clientHost + ":" + clientSocket.getPort());
+                e.printStackTrace();
+            }
         }
     }
 
