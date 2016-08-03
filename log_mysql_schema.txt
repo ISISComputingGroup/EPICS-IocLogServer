@@ -4,7 +4,7 @@ CREATE DATABASE msg_log;
 
 USE msg_log;
 
-SET storage_engine=INNODB;
+SET default_storage_engine=INNODB;
 
 -- Create 'msg_log' user who can remotely access the 'archive' tables,
 -- but only change the table layout locally
