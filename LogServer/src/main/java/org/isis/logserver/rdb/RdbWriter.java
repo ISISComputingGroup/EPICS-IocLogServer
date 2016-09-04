@@ -173,7 +173,7 @@ public class RdbWriter {
             String s = getIdForValueOrNullWithPreparedStatement(getMessType);
 
             if (s == null) {
-                throw new SQLException(valueType + "\"" + value + "\" not recognised");
+                throw new SQLException(valueType + " \"" + value + "\" not recognised");
             }
             return s;
         }
