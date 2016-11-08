@@ -7,8 +7,9 @@ DEFAULT_PORT = 7004
 
 RETRY_DELAY = 1
 
-MSG_START = "<message><clientName>IOC_DEMO</clientName><type>SIM_MSG</type><severity>MINOR</severity><contents><![CDATA["
+MSG_START = "<message><clientName>IOC_DEMO</clientName><type>SIM_MSG</type><severity>{severity}</severity><contents><![CDATA["
 MSG_END = "]]></contents></message>"
+
 
 
 def connect(host, port):
@@ -29,6 +30,16 @@ def connect(host, port):
 
     return sock
 
+	
+def send_many(severity, num=1000):
+	for i in range(num):
+		if i%100 == 0:
+			print i
+		sock.send(MSG_START.format(severity=severity) + str(i) +  " auto gen message" + MSG_END + "\n")
+	
+	if num%100 != 0:
+		print i
+	
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -38,25 +49,34 @@ if __name__ == '__main__':
 
     port = args.port[0]
     host = args.host[0]
+	
+    severity = "MAJOR"
 
     print "\n------- ISIS IOC Log - Demonstration JMS Client -------"
+    print "\n"
     
     # connect to target
     sock = connect(host, port)
     	
-    print "Enter message to send or type 'exit': "
+    print "Enter message to send or 'exit' to exit, 'send many X' - to send X message, 'severity X' - to set severiy (MAJOR, MINOR or INFO):"
+    print
+
     while True:
         try:
             data = raw_input("msg> ")
-            if data == "send many":
-                for i in range(1000):
-                    if i%100 == 0:
-                        print i
-                    sock.send(MSG_START + str(i) +  " auto gen message" + MSG_END + "\n")
+            if data.startswith("send many"):
+                num = 1000
+                try:
+                    num = int(data.replace("send many ", ""))
+                except:
+                    print "Not a number using 1000"
+                send_many(severity, num)
+            elif data.startswith("severity "):
+				severity = data.replace("severity ", "").upper()
             elif data == "exit":
                 break    
             else:
-            	sock.send(MSG_START + data + MSG_END + "\n")            
+            	sock.send(MSG_START.format(severity=severity) + data + MSG_END + "\n")            
                 
         except Exception:
             print "Lost connection to IOC Log server. Attempting to reestablish"
