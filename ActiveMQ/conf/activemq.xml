@@ -59,7 +59,30 @@
             </policyMap>
         </destinationPolicy>
 
+		<!--
+			Security for sending scripts to this machine
+		-->
+		<plugins>
+			<simpleAuthenticationPlugin anonymousAccessAllowed="true" anonymousGroup="everyone">
+				<users>
+					<authenticationUser username="username" password="CHANGEME" groups="admins, everyone"/>
+				</users>
+			</simpleAuthenticationPlugin>
+			<authorizationPlugin>
+				<map>
+					<authorizationMap>
+						<authorizationEntries>
+							<authorizationEntry queue="ss_admin" write="admins" read="admins" admin="admins" />
+							<authorizationEntry topic="iocLogs" write="everyone" read="everyone" admin="everyone" />
+							<authorizationEntry topic="ActiveMQ.Advisory.>" read="everyone" write="everyone" admin="everyone"/>
+						</authorizationEntries>
+					</authorizationMap>
+				</map>
+			</authorizationPlugin>
+		</plugins>
+		
 
+		
         <!--
             The managementContext is used to configure how ActiveMQ is exposed in
             JMX. By default, ActiveMQ uses the MBean server that is started by
