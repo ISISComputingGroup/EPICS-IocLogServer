@@ -74,6 +74,8 @@
 						<authorizationEntries>
 							<authorizationEntry queue="ss_admin" write="admins" read="admins" admin="admins" />
 							<authorizationEntry topic="iocLogs" write="everyone" read="everyone" admin="everyone" />
+							<authorizationEntry topic="Instrument_CLIENT" write="everyone" read="everyone" admin="everyone" />
+							<authorizationEntry topic="Instrument_SERVER" write="everyone" read="everyone" admin="everyone" />							
 							<authorizationEntry topic="ActiveMQ.Advisory.>" read="everyone" write="everyone" admin="everyone"/>
 						</authorizationEntries>
 					</authorizationMap>
