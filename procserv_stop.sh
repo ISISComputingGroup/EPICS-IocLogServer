@@ -11,26 +11,6 @@ fi
 
 # kill procservs that manage log servers, which in turn terminates the log servers
 
-PIDFILE="$EPICS_ROOT/EPICS_JMS.pid"
-if [ -r "$PIDFILE" ]; then
-    CSPID=`cat "$PIDFILE"`
-    echo "Killing JMS server PID: $CSPID"
-    kill $CSPID
-    rm "$PIDFILE"
-else
-    echo "JMS server is not running (or $PIDFILE not readable)"
-fi
-
-PIDFILE="$MYDIR/ActiveMQ/data/activemq-`hostname`.pid"
-if [ -r "$PIDFILE" ]; then
-    CSPID=`cat "$PIDFILE"`
-    echo "Killing JMS ActiveMQ server PID: $CSPID"
-    kill $CSPID
-    rm "$PIDFILE"
-else
-    echo "JMS ActiveMQ server is not running (or $PIDFILE not readable)"
-fi
-
 PIDFILE="$EPICS_ROOT/EPICS_IOCLOG.pid"
 if [ -r "$PIDFILE" ]; then
     CSPID=`cat "$PIDFILE"`
