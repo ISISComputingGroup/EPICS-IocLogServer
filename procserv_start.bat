@@ -12,6 +12,8 @@ IF "%ICPVARDIR%"=="" (
 set IOCLOGROOT=%ICPVARDIR%/logs/ioc
 for /F "usebackq" %%I in (`cygpath %IOCLOGROOT%`) do SET IOCCYGLOGROOT=%%I
 
+REM Set config
+copy %MYDIRIOCLOG%\logserver_config.ini %MYDIRIOCLOG%\LogServer\target\logserver_config.ini
 
 REM *****************************************
 REM *        LOG SERVER
