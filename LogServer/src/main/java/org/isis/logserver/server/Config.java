@@ -31,13 +31,14 @@ import java.util.List;
  */
 public class Config 
 {
+	private static final String MYSQL_OPTIONS = "?useSSL=false";
 	private static final String KV_DELIMIT = ":";
 
 	public static final boolean verbose = false;
     
 	// Default values for each configuration setting
 	private static final String DEFAULT_jmsServerAddress = "tcp://localhost";
-	private static final String DEFAULT_jmsServerPort = "61616";
+	private static final String DEFAULT_jmsServerPort = "39990";
 	private static final String DEFAULT_jmsTopic = "iocLogs";
 	private static final String DEFAULT_sqlServerAddress = "jdbc:mysql://localhost";
 	private static final String DEFAULT_sqlServerPort = "3306";
@@ -275,7 +276,7 @@ public class Config
 	}
 	
 	public String getSqlUrl() {
-		return sqlServerAddress + ":" + sqlServerPort + "/" + sqlSchema;
+		return sqlServerAddress + ":" + sqlServerPort + "/" + sqlSchema + MYSQL_OPTIONS;
 	}
 
 
