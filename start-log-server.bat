@@ -1,4 +1,5 @@
 @echo off
+setlocal
 set LOGDIRBLOCK=%~dp0
 set CURRWORKINGDIR=%cd%
 

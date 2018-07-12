@@ -1,5 +1,5 @@
 @echo off
-
+setlocal
 set MYDIR=%~dp0
 REM kill procservs that manage log servers, which in turn terminates the log servers
 

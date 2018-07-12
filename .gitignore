@@ -15,3 +15,5 @@ relPaths.sh
 /ActiveMQ/data/
 /ISIS_CONFIG.linux-x86_64
 .project
+.settings
+NULL

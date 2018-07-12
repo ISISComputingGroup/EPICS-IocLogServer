@@ -1,5 +1,5 @@
 @echo off
-
+setlocal
 set CYGWIN=nodosfilewarning
 set MYDIRIOCLOG=%~dp0
 
