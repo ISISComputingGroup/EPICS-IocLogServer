@@ -17,3 +17,7 @@ relPaths.sh
 .project
 .settings
 NULL
+
+.idea/
+LogServer/logserver_config.ini
+LogServer/suppression.txt
