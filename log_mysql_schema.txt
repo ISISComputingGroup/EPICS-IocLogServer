@@ -8,16 +8,27 @@ SET default_storage_engine=INNODB;
 
 -- Create 'msg_log' user who can remotely access the 'archive' tables,
 -- but only change the table layout locally
-GRANT ALL ON msg_log.* TO msg_log@localhost IDENTIFIED BY '$msg_log';
-GRANT INSERT, SELECT, UPDATE, DELETE ON msg_log.* TO msg_log@'%' IDENTIFIED BY '$msg_log';
+DROP USER IF EXISTS 'msg_log'@'localhost';
+CREATE USER 'msg_log'@'localhost' IDENTIFIED WITH mysql_native_password BY '$msg_log';
+
+DROP USER IF EXISTS 'msg_log'@'%';
+CREATE USER 'msg_log'@'%' IDENTIFIED WITH mysql_native_password BY '$msg_log';
+
+GRANT ALL ON msg_log.* TO 'msg_log'@'localhost';
+GRANT INSERT, SELECT, UPDATE, DELETE ON msg_log.* TO 'msg_log'@'%';
 FLUSH PRIVILEGES;
 
 -- Create 'msg_report' user who can read data
-GRANT SELECT ON msg_log.* TO msg_report@localhost IDENTIFIED BY '$msg_report';
-GRANT SELECT ON msg_log.* TO msg_report@'%' IDENTIFIED BY '$msg_report';
+DROP USER IF EXISTS 'msg_report'@'localhost';
+CREATE USER 'msg_report'@'localhost' IDENTIFIED WITH mysql_native_password BY '$msg_report';
+DROP USER IF EXISTS 'msg_report'@'%';
+CREATE USER 'msg_report'@'%' IDENTIFIED WITH mysql_native_password BY '$msg_report';
+
+GRANT SELECT ON msg_log.* TO 'msg_report'@'localhost';
+GRANT SELECT ON msg_log.* TO 'msg_report'@'%';
 -- Default EPICS report user --
-GRANT SELECT ON msg_log.* TO report@localhost IDENTIFIED BY '$report';
-GRANT SELECT ON msg_log.* TO report@'%' IDENTIFIED BY '$report';
+GRANT SELECT ON msg_log.* TO report@localhost;
+GRANT SELECT ON msg_log.* TO report@'%';
 
 FLUSH PRIVILEGES;
 
