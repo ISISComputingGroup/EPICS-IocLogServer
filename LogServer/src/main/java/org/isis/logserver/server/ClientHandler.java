@@ -67,7 +67,7 @@ public class ClientHandler implements Runnable
 	 * @param client_socket
 	 */
     public ClientHandler(final Socket client_socket, final MessageMatcher matcher, 
-    		final JmsHandler jmsHandler, final RdbHandler rdbHandler, ClientMessageParser messageParser)
+    		final JmsHandler jmsHandler, final RdbHandler rdbHandler, ClientMessageParser messageParser, final XmlMessageParser xmlParser)
     {
     	this.matcher=matcher;
         this.clientSocket = client_socket;
@@ -80,7 +80,7 @@ public class ClientHandler implements Runnable
         this.applicationId = STANDALONE_LOG_SERVER;
         System.out.println("IOC Client " + clientHost + ":" + client_socket.getPort() + " connected");
         
-        xmlParser = new XmlMessageParser();
+        this.xmlParser = xmlParser;
     }
 
     /** Thread runnable */
@@ -157,41 +157,20 @@ public class ClientHandler implements Runnable
     }
 
     /** Log current text, severity, ... to RDB
-     *  @throws Exception on error
      */
-    private void logMessage(String messageStr, Calendar timeReceived) throws Exception
+    public void logMessage(String messageStr, Calendar timeReceived)
     {
-    	// Create the message
-    	LogMessage clientMessage = null;
+    	LogMessage clientMessage = new LogMessage();
+    	clientMessage.setRawMessage(messageStr);
     	
-    	// If message is XML formatted, parse it
-    	if(isMessageXml(messageStr)) 
-    	{
-    		clientMessage = xmlParser.parse(messageStr);
+    	// Try to create a message through the xml parser
+    	clientMessage = xmlParser.parse(clientMessage);
     		
-    		// if the message was xml formatted the actual contents of the message (contained in
-    		//	the 'contents' xml element) may need to be processed further
-    		if(clientMessage != null && messageParser != null) {
-    			String contents = clientMessage.getContents();
-    			clientMessage = messageParser.parse(contents, clientMessage);
-    		}
-    	} 
-
-    	// if message wasn't XML formatted or XML parsing failed
-    	if(clientMessage == null) 
-    	{
-    		clientMessage = new LogMessage();
-    		
-    		// use the supplied parser or just treat the raw text as the message contents
-    		if(messageParser != null) 
-    		{
-    			clientMessage = messageParser.parse(messageStr, clientMessage);
-    		} 
-    		else 
-    		{
-    			clientMessage.setContents(messageStr);
-    		}
-    	}
+		// Use the supplied parser on the message contents
+		if(messageParser != null)
+		{
+			clientMessage = messageParser.parse(clientMessage.getContents(), clientMessage);
+		} 
     	
     	// If the contents is empty, drop message
     	String contents = clientMessage.getContents();
