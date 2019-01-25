@@ -35,10 +35,10 @@ public class LogMessageFactory {
     	
     	if (clientMessage.getContents() != null) {
 			// Use the supplied parser on the message contents
-			clientMessage = messageParser.parse(clientMessage.getContents(), clientMessage);
+			messageParser.parse(clientMessage.getContents(), clientMessage);
     	} else {
     		// Use the supplied parser on the raw message
-    		clientMessage = messageParser.parse(rawMessage, clientMessage);
+    		messageParser.parse(rawMessage, clientMessage);
     	}
     	
     	// If the contents is empty, drop message

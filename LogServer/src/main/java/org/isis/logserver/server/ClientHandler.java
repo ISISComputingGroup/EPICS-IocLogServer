@@ -87,10 +87,10 @@ public class ClientHandler implements Runnable
         // the client, logging each one
     	String line;
     	String message = "";
-    	
+
         while ((line = rdr.readLine())!= null)
         {
-        	System.out.println("GOT LINE: " + line);
+        	//System.out.println("GOT LINE: " + line);
         	final Calendar calendar = Calendar.getInstance();
     		
     		// check if message is empty
@@ -106,15 +106,13 @@ public class ClientHandler implements Runnable
             }
             
     		message += line;
-    		
-    		System.out.println("GOT MESSAGE: " + message);
             
             // Plain string messages are delimited by '\n', however XML formatted messages may contain '\n'
             //	inside the message. Check if message is a half-completed XML formatted message, and if so
     		//	continue to next loop iteration to collect the rest of the message.
     		if(isMessageStartXml(message) && !isMessageEndXml(message))
     		{
-    			System.out.println("Message starts xml but does not finish, waiting for more: " + message);
+    			System.out.println("INCOMPLETE MESSAGE: " + message.length());
     			continue;
     		}
             
@@ -181,21 +179,23 @@ public class ClientHandler implements Runnable
     {
     	LogMessage clientMessage = messageFactory.createLogMessage(messageStr, timeReceived);
     	
-    	clientMessage.setClientHost(clientHost);
-    	clientMessage.setApplicationId(applicationId);
-    	
-    	// TODO: filter out repeat messages
-		synchronized (filter)
-        {
-			final MessageState info = filter.checkMessageState(clientHost, clientMessage.getRawMessage());
-			
-			// SEND MESSAGE BY JMS
-			if(info.isNewMessage())
-			{
-				rdbHandler.saveMessageToDb(clientMessage);
-				jmsHandler.addToDispatchQueue(clientMessage);
-			}
-        }
+    	if (clientMessage.getContents() != null || clientMessage.getContents() != "") {
+	    	clientMessage.setClientHost(clientHost);
+	    	clientMessage.setApplicationId(applicationId);
+	    	
+	    	// TODO: filter out repeat messages
+			synchronized (filter)
+	        {
+				final MessageState info = filter.checkMessageState(clientHost, clientMessage.getRawMessage());
+				
+				// SEND MESSAGE BY JMS
+				if(info.isNewMessage())
+				{
+					rdbHandler.saveMessageToDb(clientMessage);
+					jmsHandler.addToDispatchQueue(clientMessage);
+				}
+	        }
+    	}
     }
     
     /**
