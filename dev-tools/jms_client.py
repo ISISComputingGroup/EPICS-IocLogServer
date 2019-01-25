@@ -29,31 +29,31 @@ def start_stomp_connection(stomp_connection):
             jms_connection.start()
             jms_connection.connect(wait=True)
             jms_connection.subscribe(destination=JMS.MESSAGE_TOPIC, id=12, ack='auto')
-            print "Connected to JMS at", host_and_port
-            print "Listening for messages..."
+            print("Connected to JMS at " + host_and_port)
+            print("Listening for messages...")
             started = True
         except stomp.exception.ConnectFailedException:
-            print "Could not establish connection to JMS at", host_and_port
-            print "Will retry in", str(RETRY_DELAY), "seconds."
+            print("Could not establish connection to JMS at " + host_and_port)
+            print("Will retry in {} seconds.".format(RETRY_DELAY))
             time.sleep(RETRY_DELAY)
 
     return started
 
 
 if __name__ == '__main__':
-    print "\n------- ISIS IOC Log - Demonstration JMS Client -------"
+    print("\n------- ISIS IOC Log - Demonstration JMS Client -------")
     jms_connection = stomp.Connection([(JMS.HOST, JMS.STOMP_PORT)])
     jms_connection.set_listener('somename', MyListener())
 
     host_and_port = "'" + JMS.HOST + ":" + str(JMS.STOMP_PORT) + "'"
-    print "Attempting to connect to JMS at", host_and_port
+    print("Attempting to connect to JMS at " + host_and_port)
 
     start_stomp_connection(jms_connection)
 
     while True:
         time.sleep(RETRY_DELAY)
         if not jms_connection.is_connected():
-            print "Lost connection to JMS at", (host_and_port+"."), "Attempting to restablish..."
+            print("Lost connection to JMS at " + (host_and_port+".") + "Attempting to restablish...")
             start_stomp_connection(jms_connection)
 
-    print "Disconnected from JMS at", host_and_port
+    print("Disconnected from JMS at " + host_and_port)
