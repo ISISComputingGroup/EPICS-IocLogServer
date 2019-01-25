@@ -1,5 +1,7 @@
 package org.isis.logserver.server;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Calendar;
@@ -7,11 +9,10 @@ import java.util.Calendar;
 import org.isis.logserver.jms.JmsHandler;
 import org.isis.logserver.message.LogMessage;
 import org.isis.logserver.message.MessageMatcher;
-import org.isis.logserver.parser.ClientMessageParser;
-import org.isis.logserver.parser.XmlMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import static org.mockito.Mockito.*;
 
@@ -22,8 +23,7 @@ public class ClientHandlerTests {
 	private MessageMatcher mockMessageMatcher = mock(MessageMatcher.class);
 	private JmsHandler mockjmsHandler = mock(JmsHandler.class);
 	private RdbHandler mockRbdHandler = mock(RdbHandler.class);
-	private ClientMessageParser mockClientMessageParser = mock(ClientMessageParser.class);
-	private XmlMessageParser mockParser = mock(XmlMessageParser.class);
+	private LogMessageFactory mockFactory = mock(LogMessageFactory.class);
 	
 	private final LogMessage EMPTY_MESSAGE = new LogMessage();
 	
@@ -32,34 +32,38 @@ public class ClientHandlerTests {
 		InetAddress mockAddress = mock(InetAddress.class);
 		when(mockAddress.getHostName()).thenReturn("TEST_HOST");
 		when(mockSocket.getInetAddress()).thenReturn(mockAddress);
-		handler = new ClientHandler(mockSocket, mockMessageMatcher, mockjmsHandler, mockRbdHandler, mockClientMessageParser, mockParser);
+		handler = new ClientHandler(mockSocket, mockMessageMatcher, mockjmsHandler, mockRbdHandler, mockFactory);
 		
 		EMPTY_MESSAGE.setContents("");
 	}
 	
 	@Test
-	public void WHEN_log_message_called_THEN_client_message_parser_called_with_xml_contents() {
-		String inputString = "<?xml><message></message>";
+	public void GIVEN_message_is_not_parsable_WHEN_handle_messages_called_THEN_first_message_thrown_away() throws IOException{
+		String firstMessage = "FIRST";
+		String secondMessage = "SECOND";
 		
-		String testContent = "SOME_TEST_CONTENT";
-		LogMessage testMessage = new LogMessage();
-		testMessage.setContents(testContent);
+		BufferedReader mockReader = mock(BufferedReader.class);
+		doReturn(firstMessage).doReturn(secondMessage).doReturn(null).when(mockReader).readLine();
+		doThrow(new RuntimeException()).when(mockFactory).createLogMessage(anyString(), any(Calendar.class));
 		
-		when(mockParser.parse(any(LogMessage.class))).thenReturn(testMessage);
-		when(mockClientMessageParser.parse(anyString(), eq(testMessage))).thenReturn(testMessage);
+		handler.handleMessages(mockReader);
 		
-		handler.logMessage(inputString, Calendar.getInstance());
+		InOrder inOrder = inOrder(mockFactory);
+		inOrder.verify(mockFactory).createLogMessage(eq(firstMessage), any(Calendar.class));
+		inOrder.verify(mockFactory).createLogMessage(eq(secondMessage), any(Calendar.class));
 	}
 	
 	@Test
-	public void GIVEN_empty_message_string_WHEN_log_message_called_THEN_no_message_sent_to_db_or_jms() {
-		when(mockParser.parse(any(LogMessage.class))).thenReturn(EMPTY_MESSAGE);
-		when(mockClientMessageParser.parse(anyString(), any(LogMessage.class))).thenReturn(EMPTY_MESSAGE);
+	public void GIVEN_message_is_split_xml_WHEN_handle_messages_called_THEN_full_message_parsed() throws IOException{
+		String firstMessage = "<messageFIRST";
+		String secondMessage = "SECOND</message>";
 		
-		handler.logMessage("", Calendar.getInstance());
+		BufferedReader mockReader = mock(BufferedReader.class);
+		doReturn(firstMessage).doReturn(secondMessage).doReturn(null).when(mockReader).readLine();
+		doThrow(new RuntimeException()).when(mockFactory).createLogMessage(anyString(), any(Calendar.class));
 		
-		verify(mockjmsHandler, never()).addToDispatchQueue(any(LogMessage.class));
-		verify(mockRbdHandler, never()).saveMessageToDb(any(LogMessage.class));
+		handler.handleMessages(mockReader);
+		
+		verify(mockFactory, times(1)).createLogMessage(eq(firstMessage + "\n" + secondMessage), any(Calendar.class));
 	}
-	
 }

@@ -40,7 +40,13 @@ public class LogMessage
 	private Calendar createTime;
 	private String applicationId;
 	
-	public LogMessage() {}
+	public LogMessage() {
+		// Default values
+		eventTime = Calendar.getInstance();
+		clientName = "UNKNOWN";
+		severity = "-";
+		type = "-";
+	}
 	
 	// copy constructor
 	public LogMessage(LogMessage otherMessage)

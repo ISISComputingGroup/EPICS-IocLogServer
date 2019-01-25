@@ -35,18 +35,8 @@ import org.xml.sax.SAXException;
  */
 public class XmlMessageParser
 {
-	public LogMessage parse(LogMessage message) 
-	{
-		populateLogMessage(message);
-				
-		if(message.getContents() == null) {
-			message.setContents(message.getRawMessage());
-		}
-		
-		return message;
-	}
-	
-	public void populateLogMessage(LogMessage message)
+
+	public void parse(LogMessage message)
 	{	
 		Node root;
 		try
