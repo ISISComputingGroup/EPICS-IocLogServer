@@ -90,7 +90,6 @@ public class ClientHandler implements Runnable
 
         while ((line = rdr.readLine())!= null)
         {
-        	//System.out.println("GOT LINE: " + line);
         	final Calendar calendar = Calendar.getInstance();
     		
     		// check if message is empty
@@ -112,7 +111,6 @@ public class ClientHandler implements Runnable
     		//	continue to next loop iteration to collect the rest of the message.
     		if(isMessageStartXml(message) && !isMessageEndXml(message))
     		{
-    			System.out.println("INCOMPLETE MESSAGE: " + message.length());
     			continue;
     		}
             
