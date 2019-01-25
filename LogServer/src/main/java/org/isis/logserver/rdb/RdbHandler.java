@@ -158,10 +158,10 @@ public class RdbHandler implements Runnable
 			while(messageBuffer.size() > 0)
 			{
 				LogMessage message = messageBuffer.peek();				
-				boolean saveOk = saveLogMessageToDb(message);
+				boolean retryRequired = saveLogMessageToDb(message);
 				
 				// remove the message from the queue if successfully sent
-				if(saveOk) 
+				if(!retryRequired) 
 				{
 					messageBuffer.remove();
                     if (Config.verbose)
@@ -177,11 +177,15 @@ public class RdbHandler implements Runnable
 		}
 	}
 	
-	
+	/**
+	 * Saves a message to the database.
+	 * @param message The message to save.
+	 * @return Whether the message should be tried again.
+	 */
 	protected boolean saveLogMessageToDb(LogMessage message)
     {
 		if(rdb == null) {
-			return false;
+			return true;
 		}
 			
         try
@@ -197,12 +201,16 @@ public class RdbHandler implements Runnable
         		info.setMessageID(msg_id);
         	}
         	
-        	return true;
+        	return false;
+        }
+        catch(RdbWriter.KeyException ex) {
+        	System.out.println("Database error, error: '" + ex.getMessage() + "'");
+        	return false;
         }
         catch(SQLException ex)
         {
             System.out.println("Database error, error: '" + ex.getMessage() + "' Will retry.");
-        	return false;
+        	return true;
         }
     }
 }

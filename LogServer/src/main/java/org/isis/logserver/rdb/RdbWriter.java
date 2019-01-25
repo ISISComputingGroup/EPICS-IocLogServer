@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 
 import org.isis.logserver.message.LogMessage;
 
+
 /**
  * Writes log messages to the database.
  *
@@ -25,6 +26,17 @@ import org.isis.logserver.message.LogMessage;
 public class RdbWriter {
 
     private final Connection rdbConnection;
+    
+    /**
+     * Exception that describes when a specific enum is not available in the database
+     */
+    public class KeyException extends SQLException {
+		private static final long serialVersionUID = 1L;
+		
+		public KeyException(String reason) {
+			super(reason);
+		}
+    }	
    
     /**
      * Instantiates a new rdb writer.
@@ -173,7 +185,7 @@ public class RdbWriter {
             String s = getIdForValueOrNullWithPreparedStatement(getMessType);
 
             if (s == null) {
-                throw new SQLException(valueType + " \"" + value + "\" not recognised");
+                throw new KeyException(valueType + " \"" + value + "\" not recognised");
             }
             return s;
         }

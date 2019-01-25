@@ -151,6 +151,7 @@ public class ClientHandler implements Runnable
         		BufferedReader rdr = new BufferedReader(isReader))
         {
         	handleMessages(rdr);
+
         }
         catch (Exception e)
         {
