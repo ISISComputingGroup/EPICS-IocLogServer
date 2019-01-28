@@ -31,43 +31,24 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Parses messages that are received from the IOC in an XML format
- *
+ * Parses messages that are received from the IOC in an XML format.
  */
 public class XmlMessageParser
 {
-	public LogMessage parse(String text) 
-	{
-		LogMessage message = xmlToLogMessage(text);
-		
-		// message null if parse failed
-		if(message == null) {
-			return null;
-		}
-		
-		if(message.getContents() == null) {
-			message.setContents(text);
-		}
 
-		message.setRawMessage(text);
-		
-		return message;
-	}
-	
-	public LogMessage xmlToLogMessage(String xml)
+	public void parse(LogMessage message)
 	{	
 		Node root;
 		try
 		{
-			root = getRootElement(xml);
+			root = getRootElement(message.getRawMessage());
 		}
 		catch(SAXException|IOException|ParserConfigurationException ex)
 		{
-			System.out.println("Could not parse XML formatted message.");
-			return null;
+			System.out.println("Could not parse XML formatted message: " + ex.getMessage());
+			return;
 		}
 		
-		LogMessage message = new LogMessage();
 		NodeList messageProperties = root.getChildNodes();
 		
 		for(int i=0; i<messageProperties.getLength(); ++i)
@@ -103,14 +84,11 @@ public class XmlMessageParser
 				System.out.println("Unrecognised tag in XML message: '" + tag + "'");
 			}
 		}
-
-		return message;
 	}
 	
 	private Node getRootElement(String xml) throws SAXException, IOException, ParserConfigurationException
 	{
-		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = builderFactory.newDocumentBuilder();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
 		InputSource inputSource = new InputSource( new StringReader( xml ) );
 		

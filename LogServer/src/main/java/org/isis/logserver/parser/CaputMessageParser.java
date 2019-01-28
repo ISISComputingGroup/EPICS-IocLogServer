@@ -25,11 +25,8 @@ public class CaputMessageParser implements ClientMessageParser
     static int fake_millisecs = 0;
     static int last_secs = -1;
 	@Override
-	public LogMessage parse(String text, LogMessage msg) 
+	public LogMessage parse(String text, LogMessage message) 
 	{
-		// copy message
-		LogMessage message = new LogMessage(msg);
-
 		// caput message Format: 
 		//		(0)Date, (1)Time, (2)PC_name, (3)user_name, (4)PV_name, (5)new=new_value, (6)old=old_value  
 		//		(0)Date, (1)Time, (2)PC_name, (3)user_name, (4)PV_name, (5)new=new_value, (6)old=old_value, (7)min=min_value, (8)max=max_value

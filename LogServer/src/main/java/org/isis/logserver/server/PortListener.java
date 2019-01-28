@@ -17,6 +17,8 @@ import org.isis.logserver.jms.JmsHandler;
 import org.isis.logserver.message.MessageMatcher;
 import org.isis.logserver.parser.CaputMessageParser;
 import org.isis.logserver.parser.ClientMessageParser;
+import org.isis.logserver.parser.NullMessageParser;
+import org.isis.logserver.parser.XmlMessageParser;
 import org.isis.logserver.rdb.RdbHandler;
 
 /**
@@ -74,7 +76,7 @@ public class PortListener extends Thread
     		}
     		
     		// TODO: this shouldn't be hard-coded, move this selection elsewhere
-    		ClientMessageParser parser = null;
+    		ClientMessageParser parser = new NullMessageParser();
     		if(port == 7011)
     		{
     			parser = new CaputMessageParser();
@@ -86,7 +88,7 @@ public class PortListener extends Thread
                 {
                     final Socket client_socket = listener.accept();
                     final ClientHandler client_handler 
-                    	= new ClientHandler(client_socket, suppressions, jmsHandler, rdbHandler, parser);
+                    	= new ClientHandler(client_socket, suppressions, jmsHandler, rdbHandler, new LogMessageFactory(parser, new XmlMessageParser()));
                     
                     final Thread t = new Thread(client_handler);
                     t.start();
