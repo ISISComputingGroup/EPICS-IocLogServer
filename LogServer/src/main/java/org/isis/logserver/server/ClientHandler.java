@@ -126,6 +126,7 @@ public class ClientHandler implements Runnable
         			logMessage(message, calendar);
         		} catch (Exception e) {
         			System.out.println("Failed to parse message from "+ clientHost + ":" + clientSocket.getPort() + " - " +  message);
+        			System.out.println("Reason: " +  e.getMessage());
         			message = "";
         		}
         	}

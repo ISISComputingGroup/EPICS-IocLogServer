@@ -75,8 +75,8 @@ public class RdbWriter {
                 rdbConnection.prepareStatement(Sql.INSERT_STATEMENT, Statement.RETURN_GENERATED_KEYS)) {
             int property = 0;
 			// Set the property values for the SQL statement
-	        test.setTimestamp(++property, eventTime);
 	        test.setTimestamp(++property, createTime);
+	        test.setTimestamp(++property, eventTime);
 	        	
 	        test.setString(++property, messageType);
 	        test.setString(++property, message.getContents());
