@@ -2,6 +2,7 @@ import socket
 import argparse
 import time
 from six.moves import input
+from datetime import datetime
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 7004
@@ -13,6 +14,7 @@ MSG_START = "<message>" \
             "<type>SIM_MSG</type>" \
             "<severity>{severity}</severity>" \
             "<contents><![CDATA[{contents}]]></contents>" \
+            "<eventTime>{time}</eventTime>" \
             "</message>"
 
 
@@ -81,7 +83,8 @@ if __name__ == '__main__':
             elif data == "exit":
                 break    
             else:
-                sock.send((MSG_START.format(severity=severity, contents=data) + "\n").encode())
+                time_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")
+                sock.send((MSG_START.format(severity=severity, contents=data, time=time_str) + "\n").encode())
                 
         except Exception as e:
             print("Lost connection to IOC Log server due to {}.".format(e))
