@@ -37,11 +37,16 @@ def connect(host, port):
     return sock
 
 
+def send_message(severity, contents):
+    time_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")
+    sock.send((MSG_START.format(severity=severity, contents=contents, time=time_str) + "\n").encode())
+
+
 def send_many(severity, num=1000):
     for i in range(num):
         if i % 100 == 0:
             print(i)
-        sock.send((MSG_START.format(severity=severity, contents= str(i) + " auto gen message") + "\n").encode())
+        send_message(severity, str(i) + " auto gen message")
 
     if num % 100 != 0:
         print(i)
@@ -83,8 +88,7 @@ if __name__ == '__main__':
             elif data == "exit":
                 break    
             else:
-                time_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")
-                sock.send((MSG_START.format(severity=severity, contents=data, time=time_str) + "\n").encode())
+                send_message(severity, data)
                 
         except Exception as e:
             print("Lost connection to IOC Log server due to {}.".format(e))
