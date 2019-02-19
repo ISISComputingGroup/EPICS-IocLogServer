@@ -9,7 +9,7 @@ call %LOGDIRBLOCK%..\..\..\config_env_base.bat
 
 cd %LOGDIRBLOCK%LogServer\target\
 
-java -jar IocLogServer-1.0-SNAPSHOT.jar
+java -Xms32m -Xmx64m -jar IocLogServer-1.0-SNAPSHOT.jar
 
 REM return to previous working directory
 cd %CURRWORKINGDIR%
