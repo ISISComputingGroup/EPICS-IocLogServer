@@ -14,10 +14,10 @@ relPaths.sh
 /LogServer/target/
 /ActiveMQ/data/
 /ISIS_CONFIG.linux-x86_64
+/ISIS_CONFIG
 .project
 .settings
 NULL
-
 .idea/
 LogServer/logserver_config.ini
 LogServer/suppression.txt
