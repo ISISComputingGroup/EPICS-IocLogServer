@@ -4,6 +4,8 @@ set MYDIRBLOCK=%~dp0
 
 cd %MYDIRBLOCK%\LogServer
 
+REM need to call config env to ensure a java 8 environment.
+call %MYDIRBLOCK%\..\..\..\config_env.bat
 mvn --settings=%MYDIRBLOCK%mvn_user_settings.xml clean verify
 set builderr=%errorlevel% 
 
