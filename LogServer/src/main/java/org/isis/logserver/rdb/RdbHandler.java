@@ -18,7 +18,7 @@ import org.isis.logserver.message.MessageFilter;
 import org.isis.logserver.message.MessageState;
 import org.isis.logserver.server.Config;
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 
 /**
  * Handles the connection to a MySQL database. Automatically attempts 

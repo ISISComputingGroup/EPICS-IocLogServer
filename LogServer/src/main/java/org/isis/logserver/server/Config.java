@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class Config 
 {
-	private static final String MYSQL_OPTIONS = "?useSSL=false";
+	private static final String MYSQL_OPTIONS = "?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/London&autoReconnect=true";
 	private static final String KV_DELIMIT = ":";
 
 	public static final boolean verbose = false;

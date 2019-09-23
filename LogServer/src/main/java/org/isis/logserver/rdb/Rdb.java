@@ -18,7 +18,7 @@ import org.isis.logserver.server.Config;
 
 public class Rdb
 {
-	private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+	private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
 	
 	/** RDB connection */
 	final private Connection connection;
