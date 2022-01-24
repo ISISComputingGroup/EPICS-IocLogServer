@@ -1,6 +1,6 @@
 @echo off
 set MYDIRBLOCK=%~dp0
 
-cd %MYDIRBLOCK%
+cd /d %MYDIRBLOCK%
 
 python %MYDIRBLOCK%dev-tools\jms_client.py

@@ -7,9 +7,9 @@ call %LOGDIRBLOCK%..\..\..\config_env_base.bat
 
 %HIDEWINDOW% h
 
-cd %LOGDIRBLOCK%LogServer\target\
+cd /d %LOGDIRBLOCK%LogServer\target\
 
 java -Xms32m -Xmx64m -jar IocLogServer-1.0-SNAPSHOT.jar
 
 REM return to previous working directory
-cd %CURRWORKINGDIR%
+cd /d %CURRWORKINGDIR%
