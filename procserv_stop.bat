@@ -9,7 +9,7 @@ if "%CSPID%" == "" (
     @echo IOC Log server is not running
 ) else (
     @echo Killing IOC Log server PID %CSPID%
-    %ICPTOOLS%\cygwin_bin\cygwin_kill.exe %CSPID%
+    %ICPCYGBIN%\kill.exe %CSPID%
     del c:\windows\temp\EPICS_IOCLOG.pid
 )
 
