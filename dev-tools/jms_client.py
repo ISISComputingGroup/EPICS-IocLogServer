@@ -26,7 +26,6 @@ def start_stomp_connection(stomp_connection):
     started = False
     while not started:
         try:
-            jms_connection.start()
             jms_connection.connect(wait=True)
             jms_connection.subscribe(destination=JMS.MESSAGE_TOPIC, id=12, ack='auto')
             print("Connected to JMS at " + host_and_port)
