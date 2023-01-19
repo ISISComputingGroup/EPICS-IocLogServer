@@ -14,11 +14,11 @@ RETRY_DELAY = 1
 class MyListener(stomp.ConnectionListener):
     total_message_count = 1
 
-    def on_error(self, headers, message):
-        print('received an error %s' % message)
+    def on_error(self, frame):
+        print('received an error %s' % frame.body)
 
-    def on_message(self, headers, message):
-        print(str(MyListener.total_message_count) + '. %s'% message)
+    def on_message(self, frame):
+        print(str(MyListener.total_message_count) + '. %s'% frame.body)
         MyListener.total_message_count += 1
 
 
