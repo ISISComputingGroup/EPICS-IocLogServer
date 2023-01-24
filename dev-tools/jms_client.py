@@ -14,11 +14,11 @@ RETRY_DELAY = 1
 class MyListener(stomp.ConnectionListener):
     total_message_count = 1
 
-    def on_error(self, headers, message):
-        print('received an error %s' % message)
+    def on_error(self, frame):
+        print('received an error %s' % frame.body)
 
-    def on_message(self, headers, message):
-        print(str(MyListener.total_message_count) + '. %s'% message)
+    def on_message(self, frame):
+        print(str(MyListener.total_message_count) + '. %s'% frame.body)
         MyListener.total_message_count += 1
 
 
@@ -26,7 +26,6 @@ def start_stomp_connection(stomp_connection):
     started = False
     while not started:
         try:
-            jms_connection.start()
             jms_connection.connect(wait=True)
             jms_connection.subscribe(destination=JMS.MESSAGE_TOPIC, id=12, ack='auto')
             print("Connected to JMS at " + host_and_port)
