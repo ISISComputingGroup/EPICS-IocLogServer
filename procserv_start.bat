@@ -24,4 +24,4 @@ set LOG_FILE=%IOCCYGLOGROOT%/IOCLOG-%%Y%%m%%d.log
 
 @echo Starting IOC Log Server on 127.0.0.1 (console port %CONSOLEPORT%)
 @echo * log file - %LOG_FILE%
-%ICPCYGBIN%\procServ.exe --logstamp --logfile="%LOG_FILE%" --timefmt="%%c" --restrict --ignore="^D^C" --name=IOCLOG --pidfile="/cygdrive/c/windows/temp/EPICS_IOCLOG.pid" %CONSOLEPORT% %STARTCMD%
+%ICPCYGBIN%\procServ.exe --logstamp --logfile="%LOG_FILE%" --timefmt="%%c" --restrict --ignore="^D^C" --name=IOCLOG --pidfile="/cygdrive/c/instrument/var/run/EPICS_IOCLOG.pid" %CONSOLEPORT% %STARTCMD%
