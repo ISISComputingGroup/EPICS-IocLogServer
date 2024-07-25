@@ -15,6 +15,7 @@ COMMENT "/* binary_search_time():
  *		IN p_retention_period time -- The retention period as a time type 
  *									  (e.g. '336:00:00' == 2 wks)
  *									  Note that this is limited in SQL to '838:59:59', about 35 days
+ *      OUT p_first_row_id   -- The id value of the earliest row in the table (zeroth row).
  *		OUT p_row_number INT -- The returned record number in the table which is closest to the target time. 
  *  							This will be a reference to a variable provided by the calling scope.
  *
