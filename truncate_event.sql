@@ -20,9 +20,10 @@ CREATE EVENT IF NOT EXISTS log_truncation_event
 		-- Modify these parameters to tune the deletion event frequency
 		-- ############################################################
 		EVERY 1 DAY
-		-- STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY + INTERVAL 1 HOUR)
-        -- vv TESTING parameters vv --
-		STARTS (TIMESTAMP(CURRENT_DATE())+CURRENT_TIME()+ interval 1 minute)
+        -- Start the recurring event tomorrow at 1 am.
+		STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY + INTERVAL 1 HOUR)
+        -- vv TESTING parameters - schedule to trigger 1 minute from now  vv --
+		-- STARTS (TIMESTAMP(CURRENT_DATE())+CURRENT_TIME()+ interval 1 minute)
 		COMMENT 'Truncate message table at a given time at a defined frequency.'
 	DO
 		BEGIN
