@@ -1,4 +1,4 @@
- "/* log_truncation_event():
+ /* log_truncation_event():
  * 
  * This is an event scheduler which periodically calls truncate_message_table() 
  * with parameters of a retention period defined in the DECLARE section as days, hours and minutes.
@@ -8,7 +8,7 @@
  * Deponds on: binary_search_time() and truncate_message_table() procedured.
  *
  * Author: Ian Gillingham, July 2024
- */"
+ */
 
 DELIMITER //
 
@@ -29,15 +29,15 @@ CREATE EVENT IF NOT EXISTS log_truncation_event
             -- #################################################################################
 			--  Modify these parameters to tune the log retention period and chunk size
             -- #################################################################################
-			DECLARE retention_period_days INT DEFAULT 0;
+			DECLARE retention_period_days INT DEFAULT 30;
 			DECLARE retention_period_hours INT DEFAULT 0;
-			DECLARE retention_period_minutes INT DEFAULT 30;
+			DECLARE retention_period_minutes INT DEFAULT 0;
             DECLARE log_events BOOL DEFAULT TRUE;
             -- #################################################################################
 
 			DECLARE target_row INT DEFAULT 0;
 			DECLARE first_row_id INT DEFAULT 0;
-			DECLARE retention_period time DEFAULT '0:30:0'; -- 30 minutes for testing
+			DECLARE retention_period time;
             DECLARE starttime TIME;
 			DECLARE eventName VARCHAR(20);
             DECLARE logMessage VARCHAR(255);
@@ -57,17 +57,6 @@ CREATE EVENT IF NOT EXISTS log_truncation_event
 
             IF log_events THEN
 				SELECT concat(eventName, ': In log_truncation_event : Time: ', now()) INTO logMessage;
-				CALL debug_log(logMessage);
-			END IF;
-            
-            
-            -- Find the row closest to the retention period offset from last row.
-			CALL binary_search_time(retention_period, first_row_id, target_row);
-            
-            IF log_events THEN
-			    -- Log the event
-				SET @duration := TIMEDIFF(now(), starttime);
-				SELECT concat(eventName, ': binary_search_time() completed: First row: ', first_row_id, '   Target row: ', target_row, '   Retention period: ', retention_period, '  Time to execute: ', @duration) INTO logMessage;
 				CALL debug_log(logMessage);
 			END IF;
 
