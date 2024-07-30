@@ -106,6 +106,10 @@ COMMENT "/* binary_search_time():
 		END WHILE;
         -- Return the row number which has the closest creatTime timestamp to the target time.
         SET p_row_number = mid_row;
+        
+		SELECT concat('binary_search_time(): Exiting procedure...') INTO dbg_txt;
+        CALL debug_log(dbg_txt);
+
 	END//
 
 DELIMITER ;
