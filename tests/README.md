@@ -10,9 +10,10 @@ The automatic truncation procedure examines the `createTime` field for the earli
 Once the target record is known, records are deleted in batches of typically 1000, from the oldest to target record.
 
 ## Design of Truncation Procedures
-There are four SQL files associated with the truncation process:
+There are five SQL files associated with the truncation process:
 | SQL file | Description |
 | ------------ | -----------|
+| log-truncation-schema.sql | Used to setup the truncation event and debug table for existing systems.|
 |create_event_logger.sql| Creates a table to log truncation events|
 | debug_log.sql | A procedure that can be called to log debug or status messages.|
 | binary-search.sql | Procedure to perform a binary search on `createTime` to determine the cutoff target record.|
@@ -28,3 +29,38 @@ Once a large message table has been truncated, this process should keep it at a 
 `binary_search_time()` takes a single input parameter which defines the retention period as a `TIME` type (note that this is limited in SQL to '838:59:59', about 35 days). There are two output parameter reference values, which return the id value of the earliest row in the table (zeroth row) and the record number in the table which is closest to the target cutoff time.
 
 ## Test Design
+### Creating the truncation event and procedures on systems with and existing msg_log database
+There is a utility SQL script: `log-truncation-schema.sql` which should be run to setup the periodic truncation event, thus:
+`C:\Instrument\Apps\MySQL\bin\mysql.exe -u root --password=<root password> < tests\log-truncation-schema.sql`
+
+### Populating the `message` table with simulated records:
+For testing, the `message` table is emptied and populated with simulated messages, with `createTime` timestamps at one hour intervals over a period of 60 days. This is accomplished using the `test_fill_message.sql` SQL file:
+ `C:\Instrument\Apps\MySQL\bin\mysql.exe -u root --password=<root password> < tests\test_fill_message.sql`
+
+
+### Testing the `truncate_message_table()` procedure
+
+A SQL script has been written to call the `truncate_message_table()` procedure with standard default values, i.e. retention period of 30 days. Call the script thus:
+`C:\Instrument\Apps\MySQL\bin\mysql.exe -u root -
+-password=<root password> < tests\test_truncate_proc.sql`
+
+A result similar to the following should be output:
+```
+@ret_first_row_id       @ret_row_number
+1       722
+
+Time span in truncated message table:
+
+29 days 22 hours 0 minutes
+```
+
+Note that the actual remaining time span may not be exactly the given retention period, but should be close. This is due to the binary search termination condition providing a cutoff record which is within three records of the ideal. Nobody should quibble about three records!
+
+### Testing the `log_truncation_event()` event
+The `log_truncation_event` eventt is called periodically to ensure that the msg_log database is regularly pruned to the message retention period, given by the declared variables: retention_period_days, retention_period_hours, retention_period_minutes towards the top of the `truncate_event.sql` file. The retention period can be adjust as required, but there is a restriction of around 35 days, due to a limitation within the built-in SQL MAKETIME() function.
+To expedite testing of the event, it may be necessary to set the initial event to occur to some time soon (a minute or so). After editing the required event time & period, it will be necessary to re-create the event in the database, thus:
+`C:\Instrument\Apps\MySQL\bin\mysql.exe -u root --password=<root password> < truncate_event.sql`
+After the event should have triggered, check the message table to ensure that it is now timebound to within the given retention period.
+Further details on the execution of the even and the truncation procedure should be visible in the `debug_message` table.
+
+
