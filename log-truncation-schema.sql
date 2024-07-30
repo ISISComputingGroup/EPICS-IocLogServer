@@ -3,7 +3,7 @@
  *
  * This SQL script is intended to be used for existing log databases
  * where the automatic truncation mechanism needs to be added.
- * This will be facilotated for systems via the usual 
+ * This will normally be facilitated for systems via the usual 
  * SystemSetup\log_mysql_schema.txt schema file.
  * 
  * Use:
