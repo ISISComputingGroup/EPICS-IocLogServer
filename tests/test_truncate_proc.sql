@@ -1,3 +1,5 @@
+USE msg_log;
+
 SET @retention_period_days = 30;
 SET @retention_period_hours = 0;
 SET @retention_period_minutes = 0;
@@ -17,6 +19,6 @@ SET @new_last_datetime = NOW();
 SELECT createTime FROM message ORDER BY id LIMIT 1 INTO @new_first_datetime;
 SELECT createTime FROM message ORDER BY id DESC LIMIT 1 INTO @new_last_datetime;
 SET @td = TIMEDIFF(@new_last_datetime, @new_first_datetime);
-SELECT "Time span in truncated message table:";
-SELECT CONCAT( FLOOR(HOUR(td) / 24), ' days ', MOD(HOUR(td), 24), ' hours ', MINUTE(td), ' minutes');
+SELECT "Time span in truncated message table:" AS "";
+SELECT CONCAT( FLOOR(HOUR(@td) / 24), ' days ', MOD(HOUR(@td), 24), ' hours ', MINUTE(@td), ' minutes') AS "";
 
