@@ -36,10 +36,12 @@ COMMENT "/* truncate_message_table():
             DECLARE starttime TIME;
 			DECLARE eventName VARCHAR(40);
             DECLARE logMessage VARCHAR(255);
+            DECLARE duration TIME;
 			
             SET GLOBAL event_scheduler = ON;
             -- Attempt to work around 'Lock wait timeout exceeded' errors
-			SET GLOBAL transaction_isolation = 'READ-COMMITTED';
+			SET autocommit = 1;         
+			-- SET GLOBAL transaction_isolation = 'READ-COMMITTED';
             
             SET eventName := 'truncate_message_table()';
             
@@ -56,12 +58,21 @@ COMMENT "/* truncate_message_table():
             
             -- Find the row closest to the retention period offset from last row.
 			CALL binary_search_time(p_retention_period, first_row_id, target_row);
+
+			SELECT concat('truncate_message_table(): Returned from binary search. log_events = ', log_events) INTO logMessage;
+			CALL debug_log(logMessage);
+            -- INSERT INTO debug_messages (debug_message) VALUES (logMessage);
             
             IF log_events THEN
 			    -- Log the event
-				SET @duration := TIMEDIFF(now(), starttime);
-				SELECT concat(eventName, ': binary_search_time() completed: First row: ', first_row_id, '   Target row: ', target_row, '   Retention period: ', p_retention_period, '  Time to execute: ', @duration) INTO logMessage;
+				SET duration = TIMEDIFF(now(), starttime);
+                SET @durstr = "";
+                SELECT DATE_FORMAT(duration, '%T') INTO @durstr;
+				SELECT concat(eventName, ': binary_search_time() completed: First row: ', first_row_id, '   Target row: ', target_row, '   Retention period: ', p_retention_period) INTO logMessage;
 				CALL debug_log(logMessage);
+				-- SELECT concat(eventName, ': Truncation completed:  Time to execute: ', @durstr) INTO logMessage;
+				-- SELECT concat(eventName, ': binary_search_time() completed: First row: ', first_row_id, '   Target row: ', target_row, '   Retention period: ', p_retention_period) INTO logMessage;
+				-- CALL debug_log(logMessage);
 			END IF;
 
             -- Delete all rows from oldest to retention period offset.
@@ -83,6 +94,10 @@ COMMENT "/* truncate_message_table():
 			-- so just delete the remaining rows up to the defined last row of the overall deletion.
 			DELETE FROM message WHERE id BETWEEN @a AND target_row;
             
+            -- Set output values
+            SET p_first_row_id = first_row_id;
+            SET p_row_number = target_row;
+            
             -- Log the event
 			SET @duration := TIMEDIFF(now(), starttime);
 
@@ -90,6 +105,6 @@ COMMENT "/* truncate_message_table():
 	            SELECT concat(eventName, ': DELETED: First row: ', first_row_id, '   Target row: ', target_row, '   Retention period: ', p_retention_period, '  Time to execute: ', @duration) INTO logMessage;
 				CALL debug_log(logMessage);
 			END IF;
-            
+            SELECT logMessage;
 		END //
 DELIMITER ;
