@@ -82,10 +82,13 @@ COMMENT "/* truncate_message_table():
 				-- Determine the end id of this chunk to delete
 				SELECT id FROM message WHERE id >= @a ORDER BY id LIMIT chunk_size,1 INTO @z;
 				IF @z IS NULL OR (@z + chunk_size) >= target_row THEN
-					LEAVE chunk;  -- last chunk is less than chunk size
+					-- last chunk is less than chunk size.
+					-- @a is left pointing at the beginning of the remaining small block.
+					-- The remaining smaller block is then deleted outside of this loop.
+					LEAVE chunk;  			  
 				END IF;
-				-- Delete the chuck
-				DELETE FROM message WHERE id >= @a AND id <  @z AND id <target_row;
+				-- Delete the chunk
+				DELETE FROM message WHERE id >= @a AND id <  @z;
 				-- Iterate again starting at the next chunk
 				SET @a = @z;
 				DO SLEEP(sleep_period_sec);  -- play nicely!
