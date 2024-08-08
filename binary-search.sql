@@ -91,16 +91,9 @@ COMMENT "/* binary_search_time():
             CALL debug_log(dbg_txt);
             
 			-- Determine on which half of the tree the target resides
-			SELECT INTERVAL (target_time, first_time, mid_time, last_time) INTO lte_tree;
-			SELECT concat('lte_tree: ', lte_tree) INTO dbg_txt;
-            CALL debug_log(dbg_txt);
-            
-			-- Set the new search limits for the next sub-tree search
-			IF lte_tree = 1 THEN
+			IF target_time < mid_time THEN
 				SET last_row = mid_row;
-			END IF;
-            
-			IF lte_tree > 1 THEN
+			ELSE
 				SET first_row = mid_row;
 			END IF;
 		END WHILE;
