@@ -126,3 +126,10 @@ INSERT INTO application VALUES (1, 'IOCLogServer');
 # add some special fixed IDs that can be used for speed when writing
 # other can be added by client inserts as needed
 INSERT INTO client_host VALUES (1, '127.0.0.1');
+
+# Automatic log message table truncation
+source create_event_logger.sql;
+source debug_log.sql;
+source binary-search.sql;
+source truncate_message_table.sql
+source truncate_event.sql;

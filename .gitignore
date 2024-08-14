@@ -23,3 +23,4 @@ LogServer/logserver_config.ini
 LogServer/suppression.txt
 *.pyc
 /__pycache__/
+.vs
