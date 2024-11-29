@@ -10,9 +10,9 @@
  * Author: Ian Gillingham, July 2024
  */
 
-DELIMITER //
 
-DROP EVENT IF EXISTS log_truncation_event//
+DROP EVENT IF EXISTS log_truncation_event;
+DELIMITER //
 
 CREATE EVENT IF NOT EXISTS log_truncation_event
 	ON SCHEDULE
