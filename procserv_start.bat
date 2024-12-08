@@ -1,6 +1,6 @@
 @echo off
 setlocal
-set CYGWIN=nodosfilewarning
+set CYGWIN=disable_pcon
 set MYDIRIOCLOG=%~dp0
 
 call %MYDIRIOCLOG%..\..\..\config_env_base.bat
