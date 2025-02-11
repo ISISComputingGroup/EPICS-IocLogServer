@@ -22,6 +22,6 @@ set STARTCMD=%ComSpec% /c %MYDIRIOCLOG%start-log-server.bat
 set CONSOLEPORT=9002
 set LOG_FILE=%IOCCYGLOGROOT%/IOCLOG-%%Y%%m%%d.log
 
-@echo Starting IOC Log Server on 127.0.0.1 (console port %CONSOLEPORT%)
-@echo * log file - %LOG_FILE%
+@echo %DATE% %TIME% Starting IOC Log Server on 127.0.0.1 (console port %CONSOLEPORT%)
+@echo %DATE% %TIME% * log file - %LOG_FILE%
 %ICPCYGBIN%\procServ.exe --logstamp --logfile="%LOG_FILE%" --timefmt="%%c" --restrict --ignore="^D^C" --name=IOCLOG --pidfile="/cygdrive/c/instrument/var/run/EPICS_IOCLOG.pid" %CONSOLEPORT% %STARTCMD%
